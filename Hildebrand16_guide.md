@@ -142,8 +142,15 @@ Additionally, checkboxes in the table can select results for performing other fu
 
 #####**Viewing reconstructions in 3D**
 
-Visualizing the morphology of a reconstructed neuron benefits from 3D renderings. CATMAID offers a 3D viewer for this purpose.
+Visualizing the morphology of a reconstructed neuron benefits from 3D renderings. CATMAID includes a 3D viewer for this purpose.
+To begin the process of rendering in 3D, click on the *3D view button*:
+
+![alt text][Tb3D]
+
+
+
 After searching for a particular neuron or class of neurons (i.e., by annotation).
+
 
 [Tb3D]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Toolbar_3Dview.png "3D view"
 
@@ -155,4 +162,4 @@ Pressing the *'F1' key* will bring up a CATMAID help window pane that reveals co
 
 ----------
 Last updated on 2016-06-14 by David Hildebrand
-<!--se_discussion_list:{"h41SbNlsqb3mtPdQeOIdtotf":{"selectionStart":8862,"type":"conflict","selectionEnd":8872,"discussionIndex":"h41SbNlsqb3mtPdQeOIdtotf"}}-->
+<!--se_discussion_list:{"h41SbNlsqb3mtPdQeOIdtotf":{"selectionStart":8959,"type":"conflict","selectionEnd":8969,"discussionIndex":"h41SbNlsqb3mtPdQeOIdtotf"}}-->
