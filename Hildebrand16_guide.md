@@ -1,22 +1,22 @@
 Hildebrand16 Guide
 ===================
 
-###Introduction
+###**Introduction**
 The goal of this guide is to familiarize users with the Hildebrand16 electron micrograph (EM) dataset and the tools used to serve it. The dataset is a collection of serial-section electron microscopy image volumes acquired at different resolutions that collectively encompass the anterior quarter of one 5.5 days post-fertilization larval zebrafish.
 
 We generated this dataset to study the anatomy of the larval zebrafish brain---which is included in its entirety---and peripheral nervous system. Toward this goal, we reconstructed and annotated some features of the nervous system, namely myelinated neuronal processes, which are also available for browsing or analysis. Many non-neuronal tissues are captured in the dataset.
 
 ----------
 
-###Software
+###**Software**
 All electron micrographs and reconstructions are hosted using the [Collaborative Annotation Toolkit for Massive Amounts of Image Data (CATMAID)](http://catmaid.org/). CATMAID is designed to aid in the annotation and sharing of image datasets. This guide serves as an initial reference to help users navigate the CATMAID instance we use to host the dataset. For a more thorough understanding of the software and its functionality, please visit the [CATMAID documentation page](http://catmaid.readthedocs.org/).
 Note that using the Google Chrome browser for interacting with CATMAID is highly recommended.
 
 ----------
 
-###Getting started
+###**Getting started**
 
-####Accessing
+####**Accessing**
 Clicking on either the “[View data](http://hildebrand16.neurodata.io/catmaid/?pid=3&zp=537540&yp=351910&xp=303051&tool=navigator&sid0=2&s0=4)” or the "[View data with reconstructions](http://hildebrand16.neurodata.io/catmaid/?pid=3&zp=537540&yp=351910.65&xp=303051.44999999995&tool=tracingtool&sid0=2&s0=4)" link on the main page will immediately transport you into CATMAID.
 The colored dots visible in the "View data with reconstructions" option are positions where a reconstructed object such as a myelinated neuron intersects with the current transverse section.
 
@@ -26,10 +26,10 @@ The colored dots visible in the "View data with reconstructions" option are posi
 [Vd]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/View_data_small.png "View data"
 [Vdar]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/View_data_and_reconstructions_small.png "View data and reconstructions"
 
-####Navigating
+####**Navigating**
 Across the top of the page in CATMAID, you will see a toolbar. The toolbar provides useful information about the current view and contains various tools with which to interact with the data.
  
-#####Orienting
+#####**Orienting**
 Displayed in the toolbar are the current position, section number, and zoom level.
 The current position is defined by the center of the field of view (x, y; in nm from the top left corner) and the section number (z-index; each ~60 nm):
 ![alt text][Tbl] 
@@ -53,7 +53,7 @@ The approximate resolution associated with each zoom level is:
 [Tbl]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Toolbar_location.png "Toolbar location"
 [Tbz]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Toolbar_zoom.png "Toolbar zoom"
 
-#####Panning
+#####**Panning**
 
 To pan around the current transverse section, click the *pan tool button* on the toolbar:
 ![alt text][Tbp] 
@@ -61,29 +61,45 @@ Holding down your *left mouse button* while dragging will pan your view.
 Alternatively, if you have a *middle mouse button*, hold it down when any tool is selected and drag to pan your view.
 [Tbp]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Toolbar_pan.png "Toolbar pan"
 
-#####Viewing reconstructions
+#####**Viewing reconstructions**
 To view existing neuron reconstructions, click the *tracing tool button* on the toolbar:
 ![alt text][Tbt] 
 Colored dots will appear on top of the EM data:
 ![alt text][Vdar]
 Each dot is a single node indicating where the current section intersects with a directed [polyline](https://en.wikipedia.org/wiki/Polyline) (or treeline) annotation used to represent the morphology of a particular neuron.
-***ZOOM EXAMPLE***
+Any given node (and, thus, neuron) can be selected by hovering over it with the mouse cursor and pressing the *g key*.
+| No node selected   | Node selected (green) | 
+|:------------------:|:---------------------:|
+| ![alt text][Nns]  | ![alt text][Ns]     |
 [Tbt]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Toolbar_tracing.png "Toolbar tracing"
+[Nns]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Node_noneselected.png "Nodes, none selected"
+[Ns]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Node_selected.png "Node selected"
 
-#####Viewing tags (meta-information)
-To view the tags associated with individual nodes, click the *tag tool button* on the toolbar or press the *7 key*:
+#####**Viewing tags (meta-information)**
+Tags are meta-information associated with individual nodes. To view the tags associated with individual nodes, click the *tag tool button* on the toolbar or press the *7 key*:
 ![alt text][Tbtg] 
-***TAG EXAMPLE***
+These annotations are useful for indicating specific features such as the location of a soma (which we mark as the center of the nucleus) or the position where a neuronal process becomes myelinated.
+| Without tag view   | With tag view         | 
+|:------------------:|:---------------------:|
+| ![alt text][Tswo]  | ![alt text][Tsw]     |
+| ![alt text][Tmwo]  | ![alt text][Tmw]     |
 
 [Tbtg]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Toolbar_tags.png "Toolbar tags"
+[Tmwo]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Tag_myelinated_without.png "Myelination event without tag"
+[Tmw]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Tag_myelinated_with.png "Myelination event with tag"
+[Tswo]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Tag_soma_without.png "Soma without tag"
+[Tsw]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Tag_soma_with.png "Soma with tag"
 
-#####Finding reconstructed neurons
+#####**Finding reconstructed neurons by name**
 
-#####Viewing reconstructions in 3D
+#####**Finding reconstructed neurons by annotation**
 
-#####Different resolutions
 
-#####Help
+#####**Viewing reconstructions in 3D**
+
+#####**Different resolutions**
+
+#####**Help**
 Pressing the *F1 key* will bring up a CATMAID help window pane that reveals commands available with any given tool. Note that some of these tools will not be available without additional access. For example, annotating additional features is not publicly available. However, access for creating additional annotations can be requested.
 
 ----------
@@ -97,4 +113,5 @@ Pressing the *F1 key* will bring up a CATMAID help window pane that reveals comm
 
 
 ----------
-Last updated on 2016-06-07 by David Hildebrand<!--se_discussion_list:{"h41SbNlsqb3mtPdQeOIdtotf":{"selectionStart":6194,"type":"conflict","selectionEnd":6204,"discussionIndex":"h41SbNlsqb3mtPdQeOIdtotf"}}-->
+Last updated on 2016-06-07 by David Hildebrand
+<!--se_discussion_list:{"h41SbNlsqb3mtPdQeOIdtotf":{"selectionStart":7680,"type":"conflict","selectionEnd":7690,"discussionIndex":"h41SbNlsqb3mtPdQeOIdtotf"}}-->
