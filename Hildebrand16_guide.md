@@ -142,12 +142,26 @@ Additionally, checkboxes in the table can select results for performing other fu
 
 Additional searchable annotations currently include:
 
-| Annotation                  | Description                                                |
-|:---------------------------:|:----------------------------------------------------------:|
-| putative_spinal_projection  | May project to the spinal cord.                            |
-| lateral_line                | Is an element of the lateral line (neuromast or afferent). |
-| myelinated                  | Some portion is myelinated.                                |
-| unmyelinated                | No known portion is myelinated.                            |
+| Annotation                  | Description                                                       |
+|----------------------------:|:------------------------------------------------------------------|
+| lateral_line                | An element of the lateral line (neuromast or afferent)            |
+| left                        | Soma (or majority if no soma) is on the left side                 |
+| Mauthner                    | A Mauthner neuron                                                 |
+| motor                       | Directly innervates a muscle (i.e., motor neuron)                 |
+| myelinated                  | Some portion is myelinated                                        |
+| not_neuronal                | Not a neuron                                                      |
+| neuromast                   | Marks the position of a neuromast                                 |
+| neuromast_afferent          | A lateral line afferent that innervates a neuromast               |
+| nucMLF                      | Member of the nucleus of the medial longitudinal fasciculus       |
+| peripheral                  | Part of the peripheral nervous system                             |
+| PLLn                        | Travels through a peripheral lateral line nerve (PLLn)            |
+| putative_spinal_projection  | May project to the spinal cord                                    |
+| right                       | Soma (or majority if no soma) is on the right side                |
+| saccule                     | Marks a saccule                                                   |
+| sensory                     | Directly innervates a sensory organ                               |
+| unmyelinated                | No known portion is myelinated                                    |
+| unknown                     | Name or class of neuron is unknown or not yet labeled             |
+| utricle                     | Marks a utricle                                                   |
 
 
 #####**Viewing reconstructions in 3D**
@@ -189,4 +203,4 @@ Pressing the *'F1' key* will bring up a CATMAID help window pane that reveals co
 
 ----------
 Last updated on 2016-06-14 by David Hildebrand
-<!--se_discussion_list:{"h41SbNlsqb3mtPdQeOIdtotf":{"selectionStart":10813,"type":"conflict","selectionEnd":10823,"discussionIndex":"h41SbNlsqb3mtPdQeOIdtotf"}}-->
+<!--se_discussion_list:{"h41SbNlsqb3mtPdQeOIdtotf":{"selectionStart":12255,"type":"conflict","selectionEnd":12265,"discussionIndex":"h41SbNlsqb3mtPdQeOIdtotf"}}-->
