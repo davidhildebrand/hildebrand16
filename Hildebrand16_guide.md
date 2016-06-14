@@ -32,9 +32,11 @@ Across the top of the page in CATMAID, you will see a toolbar. The toolbar provi
 #####**Orienting**
 Displayed in the toolbar are the current position, section number, and zoom level.
 The current position is defined by the center of the field of view (x, y; in nm from the top left corner) and the section number (z-index; each ~60 nm):
+
 ![alt text][Tbl]
 
-The zoom level for the field of view can be set to visualize the full extents of the transverse section at low resolution or a restricted field of view at high resolution.
+The zoom level for the field of view can be set to visualize the full extents of the transverse section at low resolution or a restricted field of view at high resolution:
+
 ![alt text][Tbz]
 
 The approximate resolution associated with each zoom level is:
@@ -52,22 +54,30 @@ The approximate resolution associated with each zoom level is:
 | -3         | 7.05 nm/px <sup>†</sup> |
 
 <sup>†</sup>Artificially upsampled. The actual resolution of raw data is 18.8 nm/px within most brain regions and 56.4 nm/px outside the brain.
+
 [Tbl]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Toolbar_location.png "Toolbar location"
 [Tbz]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Toolbar_zoom.png "Toolbar zoom"
 
 #####**Panning**
 
 To pan around the current transverse section, click the *pan tool button* on the toolbar:
-![alt text][Tbp] 
+
+![alt text][Tbp]
+
 Holding down your *left mouse button* while dragging will pan your view.
 Alternatively, if you have a *middle mouse button*, hold it down when any tool is selected and drag to pan your view.
+
 [Tbp]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Toolbar_pan.png "Toolbar pan"
 
 #####**Viewing reconstructions**
 To view existing neuron reconstructions, click the *tracing tool button* on the toolbar:
-![alt text][Tbt] 
+
+![alt text][Tbt]
+
 Colored dots will appear on top of the EM data:
+
 ![alt text][Vdar]
+
 Each dot is a single node indicating where the current section intersects with a directed [polyline](https://en.wikipedia.org/wiki/Polyline) (or treeline) annotation used to represent the morphology of a particular neuron.
 Clicking the *spacebar key* toggles between viewing reconstructions as overlays on the data and a data-only view.
 Any given node (and, thus, neuron) can be selected by hovering over it with the mouse cursor and pressing the *'g' key*.
@@ -82,7 +92,9 @@ Any given node (and, thus, neuron) can be selected by hovering over it with the 
 
 #####**Viewing tags (meta-information)**
 Tags are meta-information associated with individual nodes. To view the tags associated with individual nodes, click the *tag tool button* on the toolbar or press the *'7' key*:
+
 ![alt text][Tbtg]
+
 Tags are useful for indicating specific features such as the location of a soma (which we mark as the center of the nucleus) or the position where a neuronal process becomes myelinated.
 
 | Without tag view   | With tag view         |
@@ -99,10 +111,14 @@ Tags are useful for indicating specific features such as the location of a soma 
 #####**Finding reconstructed neurons**
 Included in the database are several reconstructions, including all myelinated neurons that we could find. Some of these neurons are named or annotated and can be found with the CATMAID search functions.
 To search by name or annotation, click the *neuron/annotation search button* on the toolbar or press the *'/' key*:
+
 ![alt text][Tbns]
+
 This action will add a new panel to your CATMAID session. In the new panel, there are fields for name or annotation searching. You can, for example, search for the Mauthner neurons by name or annotation by typing in 'mauthner':
+
 ![alt text][NAs]
-If the search result type is 'annotation', clicking on it will list neurons with that annotation. 
+
+If the search result type is 'annotation', clicking on it will list neurons with that annotation.
 If the search result type is 'neuron', clicking on it will select the neuron as active and color its nodes in the main panel.
 Additionally, checkboxes in the table can select results for performing other functions, such as adding annotations or adding the reconstructions to a three-dimensional (3D) view.
 
@@ -130,4 +146,4 @@ Pressing the *F1 key* will bring up a CATMAID help window pane that reveals comm
 
 ----------
 Last updated on 2016-06-07 by David Hildebrand
-<!--se_discussion_list:{"h41SbNlsqb3mtPdQeOIdtotf":{"selectionStart":8964,"type":"conflict","selectionEnd":8974,"discussionIndex":"h41SbNlsqb3mtPdQeOIdtotf"}}-->
+<!--se_discussion_list:{"h41SbNlsqb3mtPdQeOIdtotf":{"selectionStart":8977,"type":"conflict","selectionEnd":8987,"discussionIndex":"h41SbNlsqb3mtPdQeOIdtotf"}}-->
