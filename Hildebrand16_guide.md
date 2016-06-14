@@ -198,9 +198,14 @@ Several additional view and color settings are available in the 3D view and sele
 #####**Different resolutions**
 
 
-#####**Help**
-Pressing the *'F1' key* will bring up a CATMAID help window pane that reveals commands available with any given tool. Note that some of these tools will not be available without additional access. For example, annotating additional features is not publicly available. However, access for creating additional annotations can be requested.
+
+[LCb]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Layer_controls_button.png "Layer controls button"
+[LC]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Layer_controls.png "Layer controls"
+
+
+#####**Additional help**
+Pressing the *'F1' key* will bring up a CATMAID help window pane that reveals commands available with any given tool. Note that some CATMAID tools will not function properly without additional access. For example, annotating additional features is not currently publicly available. However, we are happy to provide access for those who wish to create additional annotations.
 
 ----------
 Last updated on 2016-06-14 by David Hildebrand
-<!--se_discussion_list:{"h41SbNlsqb3mtPdQeOIdtotf":{"selectionStart":12255,"type":"conflict","selectionEnd":12265,"discussionIndex":"h41SbNlsqb3mtPdQeOIdtotf"}}-->
+<!--se_discussion_list:{"h41SbNlsqb3mtPdQeOIdtotf":{"selectionStart":12537,"type":"conflict","selectionEnd":12547,"discussionIndex":"h41SbNlsqb3mtPdQeOIdtotf"}}-->
