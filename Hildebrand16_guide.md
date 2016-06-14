@@ -28,8 +28,8 @@ The colored dots visible in the "View data with reconstructions" option are posi
 | View data        | View data and reconstructions |
 |:----------------:|:-----------------------------:|
 | ![alt text][Vd]  | ![alt text][Vdar]             |
-[Vd]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/View_data_small.png "View data"
-[Vdar]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/View_data_and_reconstructions_small.png "View data and reconstructions"
+[Vd]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/View_data.png "View data"
+[Vdar]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/View_data_and_reconstructions.png "View data and reconstructions"
 
 
 ####**Navigating**
@@ -138,7 +138,17 @@ If the search result type is 'neuron', clicking on it will select the neuron as 
 Additionally, checkboxes in the table can select results for performing other functions, such as adding annotations or adding the reconstructions to a three-dimensional (3D) view.
 
 [Tbns]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Toolbar_neuronsearch.png "Neuron/annotation search"
-[NAs]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Neuron_search_small.png "Neuron/annotation search"
+[NAs]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Neuron_search.png "Neuron/annotation search"
+
+Additional searchable annotations currently include:
+
+| Annotation                  | Description                                                |
+|:---------------------------:|:----------------------------------------------------------:|
+| putative_spinal_projection  | May project to the spinal cord.                            |
+| lateral_line                | Is an element of the lateral line (neuromast or afferent). |
+| myelinated                  | Some portion is myelinated.                                |
+| unmyelinated                | No known portion is myelinated.                            |
+
 
 #####**Viewing reconstructions in 3D**
 
@@ -152,14 +162,23 @@ This will add two new panes, including the 3D viewer and a selection table:
 ![alt text][V3Dp]
 
 The currently active skeleton or results from searching for a particular neuron or class of neurons (i.e., by annotation) can be added to the 3D viewer by using the drop-down menu and append button in the selection pane.
-Checking the boxes next to both the left and right Mauthner neurons searched for in the previous example, selecting 'Neuron Search 1' in the drop-down menu, and clicking the *Append* button:
+Neurons can be added to the 3D view by checking the boxes next to search results, selecting 'Neuron Search 1' in the drop-down menu, and clicking the *Append* button:
 
 ![alt text][STa]
 
+For both the left and right Mauthner neurons searched for previously, you will see a rendering of two neurons within a bounding box (red outline) defined by the image stack and a floor (white mesh):
+
+![alt text][V3Dm]
+
+To rotate the view, click and drag the *left mouse button*.
+To zoom in or out, scroll your *mouse wheel*.
+To pan within the 3D view, click and drag the *right mouse button*.
+Several additional view and color settings are available in the 3D view and selection panes.
 
 [Tb3D]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Toolbar_3Dview.png "Toolbar 3D view"
-[V3Dp]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/View_3D_small.png "3D view pane"
+[V3Dp]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/View_3D.png "3D view pane"
 [STa]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Selection_append.png "Selection append"
+[V3Dm]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/View_3D_mauthner.png "3D view pane with Mauthner neurons"
 
 
 #####**Different resolutions**
@@ -170,4 +189,4 @@ Pressing the *'F1' key* will bring up a CATMAID help window pane that reveals co
 
 ----------
 Last updated on 2016-06-14 by David Hildebrand
-<!--se_discussion_list:{"h41SbNlsqb3mtPdQeOIdtotf":{"selectionStart":9629,"type":"conflict","selectionEnd":9639,"discussionIndex":"h41SbNlsqb3mtPdQeOIdtotf"}}-->
+<!--se_discussion_list:{"h41SbNlsqb3mtPdQeOIdtotf":{"selectionStart":10813,"type":"conflict","selectionEnd":10823,"discussionIndex":"h41SbNlsqb3mtPdQeOIdtotf"}}-->
