@@ -149,14 +149,18 @@ To begin the process of rendering in 3D, click on the *3D view button*:
 
 This will add two new panes, including the 3D viewer and a selection table:
 
-![alt text][V3D]
+![alt text][V3Dp]
 
 The currently active skeleton or results from searching for a particular neuron or class of neurons (i.e., by annotation) can be added to the 3D viewer by using the drop-down menu and append button in the selection pane.
-Checking the boxes next to both the left and right Mauthner neurons searched for in the previous example, selecting 'Neuron Search 1' in the drop-down menu, and clicking the *Append* button
+Checking the boxes next to both the left and right Mauthner neurons searched for in the previous example, selecting 'Neuron Search 1' in the drop-down menu, and clicking the *Append* button:
+
+![alt text][STa]
 
 
 [Tb3D]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Toolbar_3Dview.png "Toolbar 3D view"
-[V3D]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/View_3D_small.png "3D view"
+[V3Dp]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/View_3D_small.png "3D view pane"
+[STa]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Selection_append.png "Selection append"
+
 
 #####**Different resolutions**
 
@@ -166,4 +170,4 @@ Pressing the *'F1' key* will bring up a CATMAID help window pane that reveals co
 
 ----------
 Last updated on 2016-06-14 by David Hildebrand
-<!--se_discussion_list:{"h41SbNlsqb3mtPdQeOIdtotf":{"selectionStart":9489,"type":"conflict","selectionEnd":9499,"discussionIndex":"h41SbNlsqb3mtPdQeOIdtotf"}}-->
+<!--se_discussion_list:{"h41SbNlsqb3mtPdQeOIdtotf":{"selectionStart":9629,"type":"conflict","selectionEnd":9639,"discussionIndex":"h41SbNlsqb3mtPdQeOIdtotf"}}-->
