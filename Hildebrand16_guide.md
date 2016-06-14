@@ -2,13 +2,16 @@ Hildebrand16 Guide
 ===================
 
 ###**Introduction**
+
 The goal of this guide is to familiarize users with the Hildebrand16 electron micrograph (EM) dataset and the tools used to serve it. The dataset is a collection of serial-section electron microscopy image volumes acquired at different resolutions that collectively encompass the anterior quarter of one 5.5 days post-fertilization larval zebrafish.
 
 We generated this dataset to study the anatomy of the larval zebrafish brain--which is included in its entirety--and peripheral nervous system. Toward this goal, we reconstructed and annotated some features of the nervous system, namely myelinated neuronal processes, which are also available for browsing or analysis. Many non-neuronal tissues are captured in the dataset.
 
 ----------
 
+
 ###**Software**
+
 All electron micrographs and reconstructions are hosted using the [Collaborative Annotation Toolkit for Massive Amounts of Image Data (CATMAID)](http://catmaid.org/). CATMAID is designed to aid in the annotation and sharing of image datasets. This guide serves as an initial reference to help users navigate the CATMAID instance we use to host the dataset. For a more thorough understanding of the software and its functionality, please visit the [CATMAID documentation page](http://catmaid.readthedocs.org/).
 Note that using the Google Chrome browser for interacting with CATMAID is highly recommended.
 
@@ -16,7 +19,9 @@ Note that using the Google Chrome browser for interacting with CATMAID is highly
 
 ###**Getting started**
 
+
 ####**Accessing**
+
 Clicking on either the “[View data](http://hildebrand16.neurodata.io/catmaid/?pid=3&zp=537540&yp=351910&xp=303051&tool=navigator&sid0=2&s0=4)” or the "[View data with reconstructions](http://hildebrand16.neurodata.io/catmaid/?pid=3&zp=537540&yp=351910.65&xp=303051.44999999995&tool=tracingtool&sid0=2&s0=4)" link on the main page will immediately transport you into CATMAID.
 The colored dots visible in the "View data with reconstructions" option are positions where a reconstructed object such as a myelinated neuron intersects with the current transverse section.
 
@@ -26,10 +31,14 @@ The colored dots visible in the "View data with reconstructions" option are posi
 [Vd]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/View_data_small.png "View data"
 [Vdar]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/View_data_and_reconstructions_small.png "View data and reconstructions"
 
+
 ####**Navigating**
+
 Across the top of the page in CATMAID, you will see a toolbar. The toolbar provides useful information about the current view and contains various tools with which to interact with the data.
 
+
 #####**Orienting**
+
 Displayed in the toolbar are the current position, section number, and zoom level.
 The current position is defined by the center of the field of view (x, y; in nm from the top left corner) and the section number (z-index; each ~60 nm):
 
@@ -58,6 +67,7 @@ The approximate resolution associated with each zoom level is:
 [Tbl]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Toolbar_location.png "Toolbar location"
 [Tbz]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Toolbar_zoom.png "Toolbar zoom"
 
+
 #####**Panning**
 
 To pan around the current transverse section, click the *pan tool button* on the toolbar:
@@ -69,7 +79,9 @@ Alternatively, if you have a *middle mouse button*, hold it down when any tool i
 
 [Tbp]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Toolbar_pan.png "Toolbar pan"
 
+
 #####**Viewing reconstructions**
+
 To view existing neuron reconstructions, click the *tracing tool button* on the toolbar:
 
 ![alt text][Tbt]
@@ -90,7 +102,9 @@ Any given node (and, thus, neuron) can be selected by hovering over it with the 
 [Nns]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Node_noneselected.png "Nodes, none selected"
 [Ns]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Node_selected.png "Node selected"
 
+
 #####**Viewing tags (meta-information)**
+
 Tags are meta-information associated with individual nodes. To view the tags associated with individual nodes, click the *tag tool button* on the toolbar or press the *'7' key*:
 
 ![alt text][Tbtg]
@@ -109,6 +123,7 @@ Tags are useful for indicating specific features such as the location of a soma 
 [Tsw]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Tag_soma_with.png "Soma with tag"
 
 #####**Finding reconstructed neurons**
+
 Included in the database are several reconstructions, including all myelinated neurons that we could find. Some of these neurons are named or annotated and can be found with the CATMAID search functions.
 To search by name or annotation, click the *neuron/annotation search button* on the toolbar or press the *'/' key*:
 
@@ -127,23 +142,17 @@ Additionally, checkboxes in the table can select results for performing other fu
 
 #####**Viewing reconstructions in 3D**
 
+Visualizing the morphology of a reconstructed neuron benefits from 3D renderings. CATMAID offers a 3D viewer for this purpose.
+After searching for a particular neuron or class of neurons (i.e., by annotation).
+
+[Tb3D]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Toolbar_3Dview.png "3D view"
 
 #####**Different resolutions**
 
 
 #####**Help**
-Pressing the *F1 key* will bring up a CATMAID help window pane that reveals commands available with any given tool. Note that some of these tools will not be available without additional access. For example, annotating additional features is not publicly available. However, access for creating additional annotations can be requested.
+Pressing the *'F1' key* will bring up a CATMAID help window pane that reveals commands available with any given tool. Note that some of these tools will not be available without additional access. For example, annotating additional features is not publicly available. However, access for creating additional annotations can be requested.
 
 ----------
-
-> **Note:**
-
-> - StackEdit is accessible offline after the application has been loaded for the first time.
-> - Your local documents are not shared between different browsers or computers.
-> - Clearing your browser's data may **delete all your local documents!** Make sure your documents are synchronized with **Google Drive** or **Dropbox** (check out the [<i class="icon-refresh"></i> Synchronization](#synchronization) section).
-
-
-
-----------
-Last updated on 2016-06-07 by David Hildebrand
-<!--se_discussion_list:{"h41SbNlsqb3mtPdQeOIdtotf":{"selectionStart":8977,"type":"conflict","selectionEnd":8987,"discussionIndex":"h41SbNlsqb3mtPdQeOIdtotf"}}-->
+Last updated on 2016-06-14 by David Hildebrand
+<!--se_discussion_list:{"h41SbNlsqb3mtPdQeOIdtotf":{"selectionStart":8862,"type":"conflict","selectionEnd":8872,"discussionIndex":"h41SbNlsqb3mtPdQeOIdtotf"}}-->
