@@ -197,7 +197,15 @@ Several additional view and color settings are available in the 3D view and sele
 
 #####**Different resolutions**
 
+The database includes overlapping image stacks acquired at different resolutions. For a given section (z-index), images acquired at different resolutions are treated as layers. The higher resolution images are placed on top of--and obscuring the view of--the lower resolution images.
 
+Click the *layer controls button* in the bottom right corner of the main pane to access options associated with each image stack layer:
+
+![alt text][LCb]
+
+Layer controls allow you to remove a particular image stack or resolution from view, change layer opacity, or alter display settings:
+
+![alt text][LC]
 
 [LCb]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Layer_controls_button.png "Layer controls button"
 [LC]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Layer_controls.png "Layer controls"
@@ -208,4 +216,4 @@ Pressing the *'F1' key* will bring up a CATMAID help window pane that reveals co
 
 ----------
 Last updated on 2016-06-14 by David Hildebrand
-<!--se_discussion_list:{"h41SbNlsqb3mtPdQeOIdtotf":{"selectionStart":12537,"type":"conflict","selectionEnd":12547,"discussionIndex":"h41SbNlsqb3mtPdQeOIdtotf"}}-->
+<!--se_discussion_list:{"h41SbNlsqb3mtPdQeOIdtotf":{"selectionStart":13127,"type":"conflict","selectionEnd":13137,"discussionIndex":"h41SbNlsqb3mtPdQeOIdtotf"}}-->
