@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 import imghdr
 import numpy
+import glob
 import os
-import pickle
 import scipy.misc
 import scipy.ndimage
 import sys
+from PIL import Image
 
 dimdir = '/zflode/130201zf142/PSC/150820_60nmpxS1_linked/'
 doutdir = '/zflode/130201zf142/Russel/Test1200nmIsoGen_OrderChange/'
-imagepickle = '/zflode/130201zf142/Russel/Downsample_imgsource_proppickle.p'
 
 inres = numpy.array([56.3, 56.3, 60.])
 outres = numpy.array([1200., 1200., 1200.])
@@ -95,7 +95,8 @@ def intrazpix(stack, secperpix):
                                       order=1)
         del subzs
         marray = numpy.ma.array(newstack,
-                                mask=numpy.resize(substack.mask, newstack.shape))
+                                mask=numpy.resize(substack.mask,
+                                                  newstack.shape))
         meanarr = numpy.ma.mean(marray, axis=2)
         try:
             newarr[:, :, j] = meanarr
@@ -128,11 +129,10 @@ if __name__ == "__main__":
         imdir = dimdir
         outdir = doutdir
 
-    if os.path.exists(imagepickle):
-        with open(imagepickle, 'r') as p:
-            imgs, shape = pickle.load(p)
-    else:
-        imgs = getimageinfo(imdir)
-        with open(imagepickle, 'w') as p:
-            pickle.dump([imgs, shape], p)
-    process_stack(imgs)
+    img_files = glob.glob(imdir)
+    for f in img_files:
+        if os.path.exists(f):
+            imgs = Image.open(f)
+        else:
+            imgs = getimageinfo(f)
+        process_stack(imgs)
