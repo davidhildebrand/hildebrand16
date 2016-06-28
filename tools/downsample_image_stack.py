@@ -3,6 +3,7 @@ import imghdr
 import numpy
 import glob
 import os
+import argparse
 import scipy.misc
 import scipy.ndimage
 import sys
@@ -12,11 +13,37 @@ dimdir = '/zflode/130201zf142/PSC/150820_60nmpxS1_linked/'
 doutdir = '/zflode/130201zf142/Russel/Test1200nmIsoGen_OrderChange/'
 
 inres = numpy.array([56.3, 56.3, 60.])
-outres = numpy.array([1200., 1200., 1200.])
+outres = numpy.array([300., 300., 300.])
+# outres = numpy.array([1200., 1200., 1200.])
 scale = inres / outres
 
 secsize = int(numpy.ceil(1 / scale[2]))
 default_slice_buff = int(numpy.ceil(1/scale[2]))
+
+
+def directory(path):
+    if not os.path.isdir(path):
+        err_msg = "path is not a directory (%s)"
+        raise argparse.ArgumentTypeError(err_msg)
+    return path
+
+# parse command line options
+parser = argparse.ArgumentParser()
+parser.add_argument(
+   '-s', '--source', type=directory, required=True,
+   help="Path to a source directory containing image files to be downsampled."
+        "[required]")
+parser.add_argument(
+   '-d', '--dest', type=directory, required=True,
+   help="Path to a destination directory. [required]")
+parser.add_argument(
+   '-r', '--sect', type=int, required=False,
+   help="Desired resolution of output image. [not required]")
+opts = parser.parse_args()
+
+source_path = opts.source
+dest_path = opts.dest
+res = opts.sect
 
 
 def getimageinfo(imdir):
@@ -66,6 +93,7 @@ def save_images(img, start, zscale=scale[2]):
         fn = outdir + '{}T_down.PGM'.format(str(int(start + (float(zcoord) *
                                                 1. / zscale))).zfill(5))
         if numpy.std(img[:, :, zcoord]) < 10:
+            print numpy.std(img[:, :, zcoord])
             print "WARNING!  Low standard deviation on {}".format(fn)
         scipy.misc.imsave(fn, img[:, :, zcoord])
 
@@ -122,17 +150,17 @@ def process_stack(images, slice_buff=default_slice_buff, onlyintra_zpix=True):
         save_images(stack, i, zscale=scale[2])
 
 if __name__ == "__main__":
-    try:
-        imdir = sys.argv[1]
-        outdir = sys.argv[2]
-    except:
+    if source_path:
+        imdir = source_path
+    else:
         imdir = dimdir
+    if dest_path:
+        outdir = dest_path
+    else:
         outdir = doutdir
-
+    if res:
+        outres = numpy.array([res, res, res])
+    print outres
     img_files = glob.glob(imdir)
-    for f in img_files:
-        if os.path.exists(f):
-            imgs = Image.open(f)
-        else:
-            imgs = getimageinfo(f)
-        process_stack(imgs)
+    imgs = getimageinfo(img_files[0])
+    process_stack(imgs)
