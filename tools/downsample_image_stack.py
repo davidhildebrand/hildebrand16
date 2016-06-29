@@ -80,9 +80,11 @@ def buildarray(images, minim, maxim, max_slice_buff=default_slice_buff):
     stack = numpy.empty([shape[0], shape[1], slice_buff]) * numpy.nan
     for slc in range(minim, (maxim)):
         if slc in images.keys():
+            print images[slc]['fullpath']
             stack[:, :, (slc - minim)] = scipy.misc.imread(images[slc]
                                                            ['fullpath'])
     print "array built!"
+    print "stack shape: {}".format(stack.shape)
     return stack
 
 
@@ -134,6 +136,7 @@ def intrazpix(stack, secperpix):
             newarr = numpy.empty(newshape)
             newarr[:, :, j] = meanarr
         print "Averaged with stdev {}".format(numpy.std(meanarr))
+        print "New Array with shape {}".format(newarr.shape)
     return newarr
 
 
