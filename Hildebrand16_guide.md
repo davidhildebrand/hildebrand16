@@ -193,7 +193,7 @@ For example, it can be helpful to change the color associated with different neu
 
 ![alt text][STc]
 
-One can also search for a particular neuron or class of neurons by name or annotation and specify the desired color:
+It is also possible to search for a particular neuron or class of neurons by name or annotation. Clicking on the *Batch Color* button will label the selected subset in the Selection Table. Alternatively, the desired color can be specified for a single neuron by clicking on its *color* button in the appropriate Selection Table row:
 
 ![alt text][STsc]
 
@@ -228,4 +228,4 @@ Pressing the *'F1' key* will bring up a CATMAID help window pane that reveals co
 
 ----------
 Last updated on 2016-06-14 by David Hildebrand
-<!--se_discussion_list:{"h41SbNlsqb3mtPdQeOIdtotf":{"selectionStart":13795,"type":"conflict","selectionEnd":13805,"discussionIndex":"h41SbNlsqb3mtPdQeOIdtotf"}}-->
+<!--se_discussion_list:{"h41SbNlsqb3mtPdQeOIdtotf":{"selectionStart":14011,"type":"conflict","selectionEnd":14021,"discussionIndex":"h41SbNlsqb3mtPdQeOIdtotf"}}-->
