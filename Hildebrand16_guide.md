@@ -176,7 +176,7 @@ This will add two new panes, including the 3D viewer and a selection table:
 ![alt text][V3Dp]
 
 The currently active skeleton or results from searching for a particular neuron or class of neurons (i.e., by annotation) can be added to the 3D viewer by using the drop-down menu and append button in the selection pane.
-Neurons can be added to the 3D view by checking the boxes next to search results, selecting 'Neuron Search 1' in the drop-down menu, and clicking the *Append* button:
+In the search results case, neurons can be added to the 3D view by checking the boxes next to result(s) of interest, selecting 'Neuron Search 1' in the drop-down menu, and clicking the *Append* button:
 
 ![alt text][STa]
 
@@ -186,14 +186,17 @@ For both the left and right Mauthner neurons searched for previously, you will s
 
 To rotate the view, click and drag the *left mouse button*.
 To zoom in or out, scroll your *mouse wheel*.
-To pan within the 3D view, click and drag the *right mouse button*.
+To pan within the 3D viewer, click and drag the *right mouse button*.
 Several additional view and color settings are available in the 3D view and selection panes.
+
+It can be helpful to change the color associated with different objects in the 3D viewer. To change a specific 
 
 [Tb3D]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Toolbar_3Dview.png "Toolbar 3D view"
 [V3Dp]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/View_3D.png "3D view pane"
 [STa]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Selection_append.png "Selection append"
 [V3Dm]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/View_3D_mauthner.png "3D view pane with Mauthner neurons"
-
+[STc]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Selection_colorize.png "Selection colorize"
+[STsc]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Selection_searchcolor.png "Selection search and color"
 
 #####**Different resolutions**
 
@@ -211,9 +214,12 @@ Layer controls allow you to remove a particular image stack or resolution from v
 [LC]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Layer_controls.png "Layer controls"
 
 
-#####**Additional help**
+----------
+
+###**Additional help**
+
 Pressing the *'F1' key* will bring up a CATMAID help window pane that reveals commands available with any given tool. Note that some CATMAID tools will not function properly without additional access. For example, annotating additional features is not currently publicly available. However, we are happy to provide access for those who wish to create additional annotations.
 
 ----------
 Last updated on 2016-06-14 by David Hildebrand
-<!--se_discussion_list:{"h41SbNlsqb3mtPdQeOIdtotf":{"selectionStart":13127,"type":"conflict","selectionEnd":13137,"discussionIndex":"h41SbNlsqb3mtPdQeOIdtotf"}}-->
+<!--se_discussion_list:{"h41SbNlsqb3mtPdQeOIdtotf":{"selectionStart":13533,"type":"conflict","selectionEnd":13543,"discussionIndex":"h41SbNlsqb3mtPdQeOIdtotf"}}-->
