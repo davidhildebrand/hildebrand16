@@ -7,12 +7,19 @@ import scipy.misc
 import scipy.ndimage
 import sys
 
-dimdir = '/zflode/130201zf142/PSC/150820_60nmpxS1_linked/'
-doutdir = '/zflode/130201zf142/Russel/Test1200nmIsoGen_OrderChange/'
-imagepickle = '/zflode/130201zf142/Russel/Downsample_imgsource_proppickle.p'
 
-inres = numpy.array([56.3, 56.3, 60.])
-outres = numpy.array([1200., 1200., 1200.])
+#: scipy.version.full_version
+#: '0.15.1'
+#
+#: numpy.version.full_version
+#: '1.9.2'
+
+dimdir = '/zflode/130201zf142/Serving/160515_SWiFT_60nmpx_singles/'
+doutdir = '/zflode/130201zf142/Serving/160515_SWiFT_60nmpx_singles_300iso/'
+imagepickle = '/zflode/Dropbox/Code/hildebrand16/tools/pickle_test_300.p'
+
+inres = numpy.array([56.4, 56.4, 60.])
+outres = numpy.array([300., 300., 300.])
 scale = inres / outres
 
 secsize = int(numpy.ceil(1 / scale[2]))
