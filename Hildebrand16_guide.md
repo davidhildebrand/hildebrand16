@@ -189,7 +189,13 @@ To zoom in or out, scroll your *mouse wheel*.
 To pan within the 3D viewer, click and drag the *right mouse button*.
 Several additional view and color settings are available in the 3D view and selection panes.
 
-It can be helpful to change the color associated with different objects in the 3D viewer. To change a specific 
+For example, it can be helpful to change the color associated with different neurons in the 3D viewer. The *Colorize* button in the Selection Table randomly assign colors to all neurons selected in the selection table:
+
+![alt text][STc]
+
+One can also search for a particular neuron or class of neurons by name or annotation and specify the desired color:
+
+![alt text][STsc]
 
 [Tb3D]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Toolbar_3Dview.png "Toolbar 3D view"
 [V3Dp]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/View_3D.png "3D view pane"
@@ -222,4 +228,4 @@ Pressing the *'F1' key* will bring up a CATMAID help window pane that reveals co
 
 ----------
 Last updated on 2016-06-14 by David Hildebrand
-<!--se_discussion_list:{"h41SbNlsqb3mtPdQeOIdtotf":{"selectionStart":13533,"type":"conflict","selectionEnd":13543,"discussionIndex":"h41SbNlsqb3mtPdQeOIdtotf"}}-->
+<!--se_discussion_list:{"h41SbNlsqb3mtPdQeOIdtotf":{"selectionStart":13795,"type":"conflict","selectionEnd":13805,"discussionIndex":"h41SbNlsqb3mtPdQeOIdtotf"}}-->
