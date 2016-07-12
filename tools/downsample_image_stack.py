@@ -81,14 +81,18 @@ def save_images(img, start, zscale=scale[2]):
         scipy.misc.imsave(fn, img[:, :, zcoord])
 
 
-def intrazpix(stack, secperpix):
+def intrazpix(stack, secperpix, mode):
     scaledshape = (scale * numpy.array(stack.shape))
-    mms = numpy.mean(stack, axis=2)
+    if mode == 'mean':
+        mms = numpy.mean(stack, axis=2)
+    if mode == 'median':
+        mms = numpy.mean(stack, axis=2)
     ss = tuple(map(int, numpy.ceil(scaledshape[:2])))
     return cv2.resize(mms, ss)[:,:,numpy.newaxis]
 
 
-def process_stack(images, scale, secsize, slice_buff, onlyintra_zpix=True):
+def process_stack(images, scale, secsize, slice_buff, mode,
+                  onlyintra_zpix=True):
     minim = min(images.keys())
     maxim = max(images.keys())
 
@@ -97,7 +101,7 @@ def process_stack(images, scale, secsize, slice_buff, onlyintra_zpix=True):
         print "processing slices {} to {}.".format(i, j)
         stack, depth = buildarray(images, i, j, slice_buff)
         if onlyintra_zpix:
-            stack = intrazpix(stack, depth)
+            stack = intrazpix(stack, depth, mode)
         save_images(stack, i, zscale=scale[2])
         print "Downsampled Imgaes Saved!"
         print "Moving onto next set..."
@@ -124,13 +128,19 @@ parser.add_argument(
 parser.add_argument(
    '-i', '--inres', nargs=3, required=False, action='append',
    help="Desired resolution of input image. [not required]")
+parser.add_argument(
+   '-m', '--mean', required=False, action="store_true",
+   help="Use this toggle to use Mean downsampling")
 opts = parser.parse_args()
 
 source_path = opts.source
 dest_path = opts.dest
 out_res = opts.outres
 in_res = opts.inres
-
+if opts.mean:
+    mode = 'mean'
+if not opts.mean:
+    mode = 'median'
 
 if __name__ == "__main__":
     if out_res:
@@ -141,9 +151,10 @@ if __name__ == "__main__":
                  float(in_res[0][2])]
     print "Output Resolution: {}".format(outres)
     print "Input Resolution: {}".format(inres)
+    print "Mode is set to {}".format(mode)
     img_files = glob.glob(source_path)
     imgs = getimageinfo(img_files[0])
     scale = inres / outres
     secsize = int(numpy.ceil(1 / scale[2]))
     default_slice_buff = int(numpy.ceil(1/scale[2]))
-    process_stack(imgs, scale, secsize, default_slice_buff)
+    process_stack(imgs, scale, secsize, default_slice_buff, mode)
