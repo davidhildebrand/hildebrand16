@@ -8,7 +8,7 @@ from PIL import Image
 import scipy.misc
 import scipy.ndimage
 import sys
-# import cv2
+import cv2
 
 
 inres = numpy.array([56.3, 56.3, 60.])
@@ -77,14 +77,12 @@ def save_images(img, start, zscale=scale[2]):
         fn = dest_path + '{}T_down.PGM'.format(str(int(start + (float(zcoord) *
                                                 1. / zscale))).zfill(5))
         if numpy.std(img[:, :, zcoord]) < 10:
-            print numpy.std(img[:, :, zcoord])
             print "WARNING!  Low standard deviation on {}".format(fn)
         scipy.misc.imsave(fn, img[:, :, zcoord])
 
 
 def intrazpix(stack, secperpix):
     scaledshape = (scale * numpy.array(stack.shape))
-    print stack.shape, stack.shape[2] / secperpix
     mms = numpy.mean(stack, axis=2)
     ss = tuple(map(int, numpy.ceil(scaledshape[:2])))
     return cv2.resize(mms, ss)[:,:,numpy.newaxis]
