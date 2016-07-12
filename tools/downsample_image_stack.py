@@ -88,7 +88,7 @@ def intrazpix(stack, secperpix, method):
     if method == 'median':
         mms = numpy.median(stack, axis=2)
     ss = tuple(map(int, numpy.ceil(scaledshape[:2])))
-    return cv2.resize(mms, ss)[:,:,numpy.newaxis]
+    return cv2.resize(mms, (ss[1], ss[0]))[:,:,numpy.newaxis]
 
 
 def process_stack(images, scale, secsize, slice_buff, method,
