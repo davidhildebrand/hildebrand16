@@ -144,11 +144,11 @@ if not opts.mean:
 
 if __name__ == "__main__":
     if out_res:
-        outres = [float(out_res[0][0]), float(out_res[0][1]),
-                  float(out_res[0][2])]
+        outres = numpy.array([float(out_res[0][0]), float(out_res[0][1]),
+                             float(out_res[0][2])])
     if in_res:
-        inres = [float(in_res[0][0]), float(in_res[0][1]),
-                 float(in_res[0][2])]
+        inres = numpy.array([float(in_res[0][0]), float(in_res[0][1]),
+                            float(in_res[0][2])])
     print "Output Resolution: {}".format(outres)
     print "Input Resolution: {}".format(inres)
     print "Method is set to {}".format(method)
