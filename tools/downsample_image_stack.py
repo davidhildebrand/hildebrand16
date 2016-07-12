@@ -11,7 +11,7 @@ import sys
 import cv2
 
 
-inres = numpy.array([56.3, 56.3, 60.])
+inres = numpy.array([56.4, 56.4, 60.])
 outres = numpy.array([300., 300., 300.])
 # outres = numpy.array([1200., 1200., 1200.])
 scale = inres / outres
