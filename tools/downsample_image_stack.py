@@ -81,17 +81,17 @@ def save_images(img, start, zscale=scale[2]):
         scipy.misc.imsave(fn, img[:, :, zcoord])
 
 
-def intrazpix(stack, secperpix, mode):
+def intrazpix(stack, secperpix, method):
     scaledshape = (scale * numpy.array(stack.shape))
-    if mode == 'mean':
+    if method == 'mean':
         mms = numpy.mean(stack, axis=2)
-    if mode == 'median':
-        mms = numpy.mean(stack, axis=2)
+    if method == 'median':
+        mms = numpy.median(stack, axis=2)
     ss = tuple(map(int, numpy.ceil(scaledshape[:2])))
     return cv2.resize(mms, ss)[:,:,numpy.newaxis]
 
 
-def process_stack(images, scale, secsize, slice_buff, mode,
+def process_stack(images, scale, secsize, slice_buff, method,
                   onlyintra_zpix=True):
     minim = min(images.keys())
     maxim = max(images.keys())
@@ -101,7 +101,7 @@ def process_stack(images, scale, secsize, slice_buff, mode,
         print "processing slices {} to {}.".format(i, j)
         stack, depth = buildarray(images, i, j, slice_buff)
         if onlyintra_zpix:
-            stack = intrazpix(stack, depth, mode)
+            stack = intrazpix(stack, depth, method)
         save_images(stack, i, zscale=scale[2])
         print "Downsampled Imgaes Saved!"
         print "Moving onto next set..."
@@ -138,9 +138,9 @@ dest_path = opts.dest
 out_res = opts.outres
 in_res = opts.inres
 if opts.mean:
-    mode = 'mean'
+    method = 'mean'
 if not opts.mean:
-    mode = 'median'
+    method = 'median'
 
 if __name__ == "__main__":
     if out_res:
@@ -151,10 +151,10 @@ if __name__ == "__main__":
                  float(in_res[0][2])]
     print "Output Resolution: {}".format(outres)
     print "Input Resolution: {}".format(inres)
-    print "Mode is set to {}".format(mode)
+    print "Method is set to {}".format(method)
     img_files = glob.glob(source_path)
     imgs = getimageinfo(img_files[0])
     scale = inres / outres
     secsize = int(numpy.ceil(1 / scale[2]))
     default_slice_buff = int(numpy.ceil(1/scale[2]))
-    process_stack(imgs, scale, secsize, default_slice_buff, mode)
+    process_stack(imgs, scale, secsize, default_slice_buff, method)
