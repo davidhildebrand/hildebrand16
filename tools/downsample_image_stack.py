@@ -1,4 +1,17 @@
 #!/usr/bin/env python
+"""
+This script requires four flags to be called when run:
+    -s /path/to/source/directory
+    -d /path/to/output/directory
+    -i input resolution ex. 56.4 56.4 60
+    -o output resolution ex. 1200 1200 1200
+
+    The script also has an optional flag:
+    -m toggle on mean averaging of images (Default is median)
+
+    This script expects a directory of images that are zero padded to 5 digits
+"""
+
 import argparse
 import glob
 import imghdr
@@ -27,23 +40,17 @@ def create_dict_of_image_metadata(source_path):
         # Ensure file is an image
         if imghdr.what(path):
             # Extract root and extension from file name
-            root, ext = os.path.splitext(fil)
+            slc, ext = os.path.splitext(fil)
             # Extract numberical slice value from file
-            slc = slicefromroot(root)
             # Add path, image, extension, and fullpath to the dictionary
-            imageinfo[slc] = {'path': source_path,
-                              'image': fil,
-                              'extension': ext,
-                              'fullpath': path}
+            imageinfo[int(slc)] = {'path': source_path,
+                                   'image': fil,
+                                   'extension': ext,
+                                   'fullpath': path}
             if shape is None:
                 # Read the shape of the image
                 shape = scipy.misc.imread(path).shape
     return imageinfo
-
-
-def slicefromroot(root):
-    # return int(root)
-    return int(root.rstrip('T'))
 
 
 def build_array_from_images(images, minim, maxim, max_slice_buff):
@@ -113,8 +120,8 @@ def save_images(img, start, zscale):
         os.makedirs(dest_path)
     # Iterate through each image in the stack, save it.
     for zcoord in range(len(img[0, 0])):
-        fn = dest_path + '{}T_down.PGM'.format(str(int(start + (float(zcoord) *
-                                                1. / zscale))).zfill(5))
+        fn = dest_path + '{}_downsampled.pgm'.format(str(int(start + (float(zcoord) *
+                                                     1. / zscale))).zfill(5))
         if numpy.std(img[:, :, zcoord]) < 10:
             print "WARNING!  Low standard deviation on {}".format(fn)
         scipy.misc.imsave(fn, img[:, :, zcoord])
