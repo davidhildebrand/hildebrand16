@@ -163,13 +163,13 @@ parser.add_argument(
    help="Path to a destination directory. [required]")
 parser.add_argument(
    '-o', '--outres', nargs=3, required=True, action='append',
-   help="Desired resolution of output image. [not required]")
+   help="Desired resolution of output image. [required]")
 parser.add_argument(
    '-i', '--inres', nargs=3, required=True, action='append',
-   help="Desired resolution of input image. [not required]")
+   help="Desired resolution of input image. [required]")
 parser.add_argument(
    '-m', '--mean', required=False, action="store_true",
-   help="Use this toggle to use Mean downsampling")
+   help="Use this toggle to use Mean downsampling. [not required]")
 opts = parser.parse_args()
 # Set up source, output, and both resolutions from system arguments
 source_path = opts.source
