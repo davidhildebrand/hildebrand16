@@ -9,7 +9,6 @@ We generated this dataset to study the anatomy of the larval zebrafish brain--wh
 
 ----------
 
-
 ###**Software**
 
 All electron micrographs and reconstructions are hosted using the [Collaborative Annotation Toolkit for Massive Amounts of Image Data (CATMAID)](http://catmaid.org/). CATMAID is designed to aid in the annotation and sharing of image datasets. This guide serves as an initial reference to help users navigate the CATMAID instance we use to host the dataset. For a more thorough understanding of the software and its functionality, please visit the [CATMAID documentation page](http://catmaid.readthedocs.org/).
@@ -193,9 +192,17 @@ For example, it can be helpful to change the color associated with different neu
 
 ![alt text][STc]
 
-One can also search for a particular neuron or class of neurons by name or annotation and specify the desired color:
+It is also possible to search for a particular neuron or class of neurons by name or annotation. Clicking on the *Batch Color* button will label the selected subset in the Selection Table. Alternatively, the desired color can be specified for a single neuron by clicking on its *color* button in the appropriate Selection Table row:
 
 ![alt text][STsc]
+
+Identifying the location of the active node can be accomplished by checking the *Active node* setting in the 3D viewer View Settings panel:
+
+![alt text][V3Dans]
+
+With this setting, the 3D viewer will update a green sphere to the location of the active node as one interacts with the database:
+
+![alt text][V3Dani]
 
 [Tb3D]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Toolbar_3Dview.png "Toolbar 3D view"
 [V3Dp]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/View_3D.png "3D view pane"
@@ -203,10 +210,18 @@ One can also search for a particular neuron or class of neurons by name or annot
 [V3Dm]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/View_3D_mauthner.png "3D view pane with Mauthner neurons"
 [STc]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Selection_colorize.png "Selection colorize"
 [STsc]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/Selection_searchcolor.png "Selection search and color"
+[V3Dans]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/View_3D_activenodeset.png "3D view pane active node setting"
+[V3Dani]: https://github.com/davidhildebrand/hildebrand16/raw/master/images/View_3D_activenodeinteractive.png "3D view pane active node interactivity"
 
 #####**Different resolutions**
 
-The database includes overlapping image stacks acquired at different resolutions. For a given section (z-index), images acquired at different resolutions are treated as layers. The higher resolution images are placed on top of--and obscuring the view of--the lower resolution images.
+The database includes overlapping image stacks acquired at different resolutions. For a g
+
+
+----------
+
+
+iven section (z-index), images acquired at different resolutions are treated as layers. The higher resolution images are placed on top of--and obscuring the view of--the lower resolution images.
 
 Click the *layer controls button* in the bottom right corner of the main pane to access options associated with each image stack layer:
 
@@ -228,4 +243,4 @@ Pressing the *'F1' key* will bring up a CATMAID help window pane that reveals co
 
 ----------
 Last updated on 2016-06-14 by David Hildebrand
-<!--se_discussion_list:{"h41SbNlsqb3mtPdQeOIdtotf":{"selectionStart":13795,"type":"conflict","selectionEnd":13805,"discussionIndex":"h41SbNlsqb3mtPdQeOIdtotf"}}-->
+<!--se_discussion_list:{"h41SbNlsqb3mtPdQeOIdtotf":{"selectionStart":14629,"type":"conflict","selectionEnd":14639,"discussionIndex":"h41SbNlsqb3mtPdQeOIdtotf"}}-->
