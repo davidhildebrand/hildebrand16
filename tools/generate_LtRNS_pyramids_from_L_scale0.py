@@ -33,7 +33,7 @@ opts = parser.parse_args()
 
 
 trans_intens = 255
-background = 250
+#background = 250
 
 
 path = opts.path
@@ -118,7 +118,7 @@ while height >= math.ceil(tile_size / 2) and width >= math.ceil(tile_size / 2):
                 # clip if no existing tRNS flag set in the tile info
                 if not 'transparency' in tl_info.keys():
                     tl_arr = numpy.array(tl)
-                    tl_arr = numpy.clip(tl_arr, 0, 254)
+                    tl_arr = numpy.clip(tl_arr, 0, trans_intens - 1)
                     tl_data = Image.fromarray(tl_arr)
                 else:
                     tl_data = tl
@@ -140,7 +140,7 @@ while height >= math.ceil(tile_size / 2) and width >= math.ceil(tile_size / 2):
                 # clip if no existing tRNS flag set in the tile info
                 if not 'transparency' in tr_info.keys():
                     tr_arr = numpy.array(tr)
-                    tr_arr = numpy.clip(tr_arr, 0, 254)
+                    tr_arr = numpy.clip(tr_arr, 0, trans_intens - 1)
                     tr_data = Image.fromarray(tr_arr)
                 else:
                     tr_data = tr
@@ -162,7 +162,7 @@ while height >= math.ceil(tile_size / 2) and width >= math.ceil(tile_size / 2):
                 # clip if no existing tRNS flag set in the tile info
                 if not 'transparency' in bl_info.keys():
                     bl_arr = numpy.array(bl)
-                    bl_arr = numpy.clip(bl_arr, 0, 254)
+                    bl_arr = numpy.clip(bl_arr, 0, trans_intens - 1)
                     bl_data = Image.fromarray(bl_arr)
                 else:
                     bl_data = bl
@@ -184,7 +184,7 @@ while height >= math.ceil(tile_size / 2) and width >= math.ceil(tile_size / 2):
                 # clip if no existing tRNS flag set in the tile info
                 if not 'transparency' in br_info.keys():
                     br_arr = numpy.array(br)
-                    br_arr = numpy.clip(br_arr, 0, 254)
+                    br_arr = numpy.clip(br_arr, 0, trans_intens - 1)
                     br_data = Image.fromarray(br_arr)
                 else:
                     br_data = br
