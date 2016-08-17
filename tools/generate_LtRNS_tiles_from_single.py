@@ -62,13 +62,13 @@ except IOError:
 # detect image size
 w = sect_image.size[0]
 h = sect_image.size[1]
-print "DEBUG: source image is " + str(w) + " px x " + str(h) + " px"
+#print "DEBUG: source image is " + str(w) + " px x " + str(h) + " px"
 
 # calculate number of tile rows and columns based on size
-print "DEBUG: tile size is " + str(tile_size)
-colnum = int(math.ceil(w / tile_size))
-rownum = int(math.ceil(h / tile_size))
-print "DEBUG: tiles " + str(colnum) + " cols x " + str(rownum) + " rows"
+#print "DEBUG: tile size is " + str(tile_size)
+colnum = int(math.ceil(float(w) / tile_size))
+rownum = int(math.ceil(float(h) / tile_size))
+#print "DEBUG: tiles " + str(colnum) + " cols x " + str(rownum) + " rows"
 
 # set 0-scale, pyramids can be generated later with a different script
 scale = 0
@@ -99,8 +99,9 @@ elif tile_info['transparency'] != trans_intens:
     print "WARNING: old and new tRNS values not the same, clipping performed"
 
 tile_mode = 'L'
-print "DEBUG: padded image size " + str(colnum*tile_size) + " x " + str(rownum*tile_size)
+#print "DEBUG: padded image size " + str(colnum*tile_size) + " x " + str(rownum*tile_size)
 data = Image.new(tile_mode, (colnum * tile_size, rownum * tile_size))
+data.paste(trans_intens)
 data.paste(sect_data, (0, 0, w, h))
 #data.load()
 #data.save(os.path.join(save_path, "data.png"))
@@ -114,8 +115,8 @@ for row in rows:
 
         # allocate tile
         tile = Image.new(tile_mode, (tile_size, tile_size))
-        print "DEBUG: left="+str(left)+" top="+str(top)+" right="+str(left+tile_size)+" bot="+str(top+tile_size)
-        print "DEBUG: sect_mode="+sect_image.mode+" data_mode="+data.mode+" tile_mode="+tile_mode
+        #print "DEBUG: left="+str(left)+" top="+str(top)+" right="+str(left+tile_size)+" bot="+str(top+tile_size)
+        #print "DEBUG: sect_mode="+sect_image.mode+" data_mode="+data.mode+" tile_mode="+tile_mode
         # copy data from region of padded section image
         data_crop = data.crop((left, top, left + tile_size, top + tile_size))
         tile.paste(data_crop)
