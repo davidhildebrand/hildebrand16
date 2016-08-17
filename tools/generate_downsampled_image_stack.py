@@ -120,10 +120,10 @@ def save_images(img, start, zscale):
         os.makedirs(dest_path)
     # Iterate through each image in the stack, save it.
     for zcoord in range(len(img[0, 0])):
-        fn = dest_path + '{}_downsampled.pgm'.format(str(int(start + (float(zcoord) *
-                                                     1. / zscale))).zfill(5))
+        fn = dest_path + '{}_downsampled.png'.format(
+                 str(int(start + (float(zcoord) * 1. / zscale))).zfill(5) ) 
         if numpy.std(img[:, :, zcoord]) < 10:
-            print "WARNING!  Low standard deviation on {}".format(fn)
+            print "WARNING: Low standard deviation on {}".format(fn)
         scipy.misc.imsave(fn, img[:, :, zcoord])
 
 
@@ -135,14 +135,14 @@ def run_downsampling_protocol(images, scale, secsize, slice_buff, method):
     for i in range(minim, maxim, slice_buff):
         # Create current buffer
         j = i + slice_buff
-        print "processing slices {} to {}.".format(i, j)
+        print "Processing slices {} to {}...".format(i, j)
         # Create stack, and obtain depth of stack
         stack, depth = build_array_from_images(images, i, j, slice_buff)
         # Downsample the image stack with selected method (Mean, median)
         downsampled_stack = average_and_resize_images(stack, depth, method)
         # Save the images to the provided directory
         save_images(downsampled_stack, i, scale[2])
-        print "Downsampled Imgaes Saved!"
+        print "Downsampled images saved."
         print "Moving onto next set..."
 
 
