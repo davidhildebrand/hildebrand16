@@ -7,7 +7,7 @@ This script requires four flags to be called when run:
     -o output resolution ex. 1200 1200 1200
 
     The script also has an optional flag:
-    -m toggle on mean averaging of images (Default is median)
+    -m toggle on mean averaging of images (default is median)
 
     This script expects a directory of images that are zero padded to 5 digits
 """
@@ -40,8 +40,10 @@ def create_dict_of_image_metadata(source_path):
         # Ensure file is an image
         if imghdr.what(path):
             # Extract root and extension from file name
-            slc, ext = os.path.splitext(fil)
+            root, ext = os.path.splitext(fil)
             # Extract numberical slice value from file
+            #slc = int(float(root.split('_')[0]) / (300./56.4))
+            slc = int(float(root.split('_')[0]) / (300./56.4))
             # Add path, image, extension, and fullpath to the dictionary
             imageinfo[int(slc)] = {'path': source_path,
                                    'image': fil,
@@ -51,7 +53,6 @@ def create_dict_of_image_metadata(source_path):
                 # Read the shape of the image
                 shape = scipy.misc.imread(path).shape
     return imageinfo
-
 
 def build_array_from_images(images, minim, maxim, max_slice_buff):
     """This function takes a given buffer minimum and maximum and creates an
@@ -85,14 +86,12 @@ def build_array_from_images(images, minim, maxim, max_slice_buff):
             # Output to screen the path for each image
             print images[slc]['fullpath']
             # Add this image to the stack
-            stack[:, :, (i)] = scipy.misc.imread(images[slc]
-                                                 ['fullpath'])
+            stack[:, :, (i)] = scipy.misc.imread(images[slc]['fullpath'])
     # Create a variable that holds the depth of the image stack
     depth = stack[2]
     print "array built!"
     print "stack shape: {}".format(stack.shape)
     return stack, depth
-
 
 def average_and_resize_images(stack, secperpix, method):
     """This function takes a stack of images (generated bfrom the
@@ -112,7 +111,6 @@ def average_and_resize_images(stack, secperpix, method):
     # return the resized image stack
     return cv2.resize(mms, (ss[1], ss[0]))[:,:,numpy.newaxis]
 
-
 def save_images(img, start, zscale):
     """This function takes the resized images an saves them to a dir"""
     # Check if directory exists, if not, create it
@@ -125,7 +123,6 @@ def save_images(img, start, zscale):
         if numpy.std(img[:, :, zcoord]) < 10:
             print "WARNING: Low standard deviation on {}".format(fn)
         scipy.misc.imsave(fn, img[:, :, zcoord])
-
 
 def run_downsampling_protocol(images, scale, secsize, slice_buff, method):
     # Find the minimum and maximum slice indices from the image dictionary
@@ -145,12 +142,12 @@ def run_downsampling_protocol(images, scale, secsize, slice_buff, method):
         print "Downsampled images saved."
         print "Moving onto next set..."
 
-
 def directory(path):
     if not os.path.isdir(path):
         err_msg = "path is not a directory (%s)"
         raise argparse.ArgumentTypeError(err_msg)
     return path
+
 
 # parse command line options
 parser = argparse.ArgumentParser()
@@ -186,9 +183,9 @@ if __name__ == "__main__":
                          float(out_res[0][2])])
     inres = numpy.array([float(in_res[0][0]), float(in_res[0][1]),
                         float(in_res[0][2])])
-    print "Output Resolution: {}".format(outres)
-    print "Input Resolution: {}".format(inres)
-    print "Method is set to {}".format(method)
+    print "Output resolution: {}".format(outres)
+    print "Input resolution: {}".format(inres)
+    print "Averaging method is {}".format(method)
     img_files = glob.glob(source_path)
     imgs = create_dict_of_image_metadata(img_files[0])
     scale = inres / outres
