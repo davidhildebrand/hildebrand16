@@ -4,7 +4,7 @@ clc
 %% settings
 DataPath = 'D:\Dropbox (Personal)\MATLAB\Data\';
 DataFile = '161017t1551_130201zf142_160515SWiFT_ProjOrLngstLtL_ANNOTsymmetry_IGNblacklistsymblack_1umLenThresh_PHYScoord_rootToNaN.txt';
-SubsetFile = '161018t1840_130201zf142_160515SWiFT_SUBSETspinalbackfillsIDENT.txt';
+SubsetFile = '161020t1703_130201zf142_160515SWiFT_SUBSETspinalbackfillsIDENTnoRoM1R.txt';
 
 DateString = datestr(now,30);
 DateString = strrep(DateString(3:length(DateString)-2),'T','t');
@@ -14,11 +14,8 @@ Prefix = strcat(DateString,'_');
 fprintf('loading data\n');
 % --------------------------------------------------
 
-% plane parameters
-% symmetry plane points
-load(strcat(DataPath,'161018t2106_sp_from161017t1551exp161018t1840subsetICP.mat')); 
-% symmetry plane perpendicular vector
-load(strcat(DataPath,'161018t2106_V_from161017t1551exp161018t1840subsetICP.mat')); 
+% load plane parameters (perpendicular vector and points)
+load(strcat(DataPath,filesep,'161020t1030_plane_from161017t1551exp161020t1025subsetICPnosubsamp.mat'));  
 
 % skeletons
 D = importdata(strcat(DataPath,filesep,DataFile));
@@ -91,7 +88,8 @@ legend('left','right'), title('roots')
 
 % compute pairwise matching costs
 % set sampling frequency (one sample per sampfreq nodes)
-sampfreq = round(2*1000/60);
+sampfreq = round(1000/60);
+%sampfreq = 50;
 % all (distinct) skeleton pairs, not only selected
 c = inf(npairs,1);
 tic
@@ -141,10 +139,17 @@ fprintf('pairwise assignment\n');
 [assignment_mr,cost_mr] = munkres(C);
 [assignment_gd,cost_gd,costs_gd] = greedyassignment2(C);
 
-assignment = assignment_gd;
-
 % disp('assignment')
-disp([1:length(assignment); assignment]')
+%disp([1:length(assignment); assignment]')
+asgnm_gd = [1:length(assignment_gd); assignment_gd]';
+asgnm_mr = [1:length(assignment_mr); assignment_mr]';
+
+assignment = assignment_gd;
+asgnm = asgnm_gd;
+
+disp(asgnm)
+fprintf('\n');
+
 for i = 1:length(assignment)
     if assignment(i) == 0
         fprintf('%s (%d) matched NONE\n',iskelnames{i},iskels(i))
@@ -155,6 +160,8 @@ for i = 1:length(assignment)
         iskelnames{assignment(i)},iskels(assignment(i)));
 end
 
+fprintf('\n');
+
 % check matching by names
 matches = NaN(size(assignment));
 for i = 1:length(assignment)
@@ -162,18 +169,18 @@ for i = 1:length(assignment)
         continue
     end
     if ~isempty(strfind(iskelnames{i},'_R'))
-        targ = iskelnames{i};
-        test = strrep(iskelnames{assignment(i)},'_L','_R');
+        targ = regexprep(iskelnames{i},'_\d','');
+        test = strrep(regexprep(iskelnames{assignment(i)},'_\d',''),'_L','_R');
     end
     if ~isempty(strfind(iskelnames{i},'_L'))
-        targ = iskelnames{i};
-        test = strrep(iskelnames{assignment(i)},'_R','_L');
+        targ = regexprep(iskelnames{i},'_\d','');
+        test = strrep(regexprep(iskelnames{assignment(i)},'_\d',''),'_R','_L');
     end
     if strcmp(targ,test)
         matches(i) = 1;
-        fprintf('%s (%d) and %s (%d) MATCHED as expected\n',...
-            iskelnames{i},iskels(i),...
-            iskelnames{assignment(i)},iskels(assignment(i)));
+        %fprintf('%s (%d) and %s (%d) MATCHED as expected\n',...
+        %    iskelnames{i},iskels(i),...
+        %    iskelnames{assignment(i)},iskels(assignment(i)));
     else
         matches(i) = 0;
         fprintf('%s (%d) and %s (%d) did NOT match expected\n',...
@@ -187,34 +194,74 @@ unexpected = sort(assignment(matches==0)); %iskelnames(assignment(matches==0))
 %% --------------------------------------------------
 fprintf('show cost matrix\n');
 % --------------------------------------------------
-HeatMap(C,'RowLabels',iskelnames(:),'ColumnLabels',iskelnames(:),'DisplayRange',min(C(C<Inf))*5,'Symmetric',false)
-CnoInf=C;
-CnoInf(C==Inf)=9999999999999;
-clustergram(CnoInf,'RowLabels',iskelnames(:),'ColumnLabels',iskelnames(:),'DisplayRange',min(C(C<Inf))*5,'Symmetric',false)
+
+Clen = length(C);
+Cord = C(round(Clen/2)+1:end,1:round(Clen/2));
+%CordnoInf(Cord==Inf)=9999999999999;
+NordL = iskelnames(1:round(Clen/2));
+NordR = iskelnames(round(Clen/2)+1:end);
+
+% boneflip = colormap(flipud(bone));
+figure(20);
+bdark = double(bone*0.9412);
+[hIm,hT,hXT]=heatmapcust(Cord,NordL(:),NordR(:),[],'ColorBar',1,'GridLines','-',...
+    'TickAngle',270,'ShowAllTicks',1,'UseLogColormap',false,...
+    'Colormap',bdark,'MaxColorValue',7000,'MinColorValue',1000);
+axis square
+ax = gca;
+ax.TickLength = [0 0];
+xlim = get(ax,'XLim');
+ylim = get(ax,'YLim');
+
+asgrect = asgnm(length(asgnm)/2+1:end,:);
+for a=1:length(asgrect)
+    if asgrect(a,2) == asgrect(a,1)-length(asgrect)
+        rectangle('Position',horzcat([asgrect(a,1)-length(asgrect)-1 asgrect(a,2)-1]+0.5,[1 1]),...
+            'EdgeColor','y','LineWidth',1)
+        fprintf('expected\n')
+    else
+        rectangle('Position',horzcat([asgrect(a,1)-length(asgrect)-1 asgrect(a,2)-1]+0.5,[1 1]),...
+            'EdgeColor','m','LineWidth',1)
+        fprintf('unexpected\n')
+    end
+end
+
+
+% HeatMap(Cord,'RowLabels',NordL(:),'ColumnLabels',NordR(:),'DisplayRange',min(Cord(:))*5,'Symmetric',false);
+
+% HeatMap(C,'RowLabels',iskelnames(:),'ColumnLabels',iskelnames(:),'DisplayRange',min(C(:))*3,'Symmetric',false)
+% CnoInf=C;
+% CnoInf(C==Inf)=9999999999999;
+% clustergram(CnoInf,'RowLabels',iskelnames(:),'ColumnLabels',iskelnames(:),'DisplayRange',min(C(:))*3,'Symmetric',false)
+
+% logC = log(C);
+% logCnoInf=log(CnoInf);
+% HeatMap(logC,'RowLabels',iskelnames(:),'ColumnLabels',iskelnames(:),'Symmetric',false)
+% clustergram(logCnoInf,'RowLabels',iskelnames(:),'ColumnLabels',iskelnames(:),'DisplayRange',min(logCnoInf(:))*1.2,'Symmetric',false)
 
 %% save
 % save(strcat(DataPath,filesep,Prefix,'C_160908T1518planeSUBSETsbackfillsICPadj_dtwSampFreq10.mat'),'C','-v7.3');
-save(strcat(DataPath,filesep,Prefix,'compOptPairAssgn_161018t1840subset_161018t2106plane_OHpenalty_dtwFreq',num2str(sampfreq),'.mat'),'-v7.3');
-save(strcat(DataPath,filesep,Prefix,'assignment_161018t1840subset_161018t2106plane_OHpenalty_dtwFreq',num2str(sampfreq),'.mat'),...
+save(strcat(DataPath,filesep,Prefix,'compOptPairAssgn_161020t1703subset_161020t1030plane_OHpenalty_dtwFreq',num2str(sampfreq),'.mat'),'-v7.3');
+save(strcat(DataPath,filesep,Prefix,'assignment_161020t1703subset_161020t1030plane_OHpenalty_dtwFreq',num2str(sampfreq),'.mat'),...
     'assignment_mr','assignment_gd','iskelnames','iskels','cost_mr',...
-    'cost_gd','costs_gd','C','-v7.3')
+    'cost_gd','costs_gd','C','asgnm','asgnm_mr','asgnm_gd','-v7.3')
 
 %% show unexpected matches
-scsz = get(0,'ScreenSize');
-% scsz = [left botton width height]
-figure('Position',[scsz(3)/4 scsz(4)/4 scsz(3)/2 scsz(4)/2])
-for i = 1:length(unexpected)
-    [P,~] = getnodes(D,iskels(unexpected(i)));
-    if unexpected(i) > 0
-        [Q,~] = getnodes(D,iskels(assignment(unexpected(i))));
-        symmetryshow_pair(P,Q,sp,V,rmin,rmax,...
-            iskels(unexpected(i)),iskelnames{unexpected(i)},...
-            iskels(assignment(unexpected(i))),iskelnames{assignment(unexpected(i))},...
-            sampfreq);
-        pause
-%         saveas(gcf,sprintf('%spair_%d_%d.png',DataPath,iskels(i),iskels(assignment(i))));
-    end
-end
+% scsz = get(0,'ScreenSize');
+% % scsz = [left botton width height]
+% figure('Position',[scsz(3)/4 scsz(4)/4 scsz(3)/2 scsz(4)/2])
+% for i = 1:length(unexpected)
+%     [P,~] = getnodes(D,iskels(unexpected(i)));
+%     if unexpected(i) > 0
+%         [Q,~] = getnodes(D,iskels(assignment(unexpected(i))));
+%         symmetryshow_pair(P,Q,sp,V,rmin,rmax,...
+%             iskels(unexpected(i)),iskelnames{unexpected(i)},...
+%             iskels(assignment(unexpected(i))),iskelnames{assignment(unexpected(i))},...
+%             sampfreq);
+%         pause
+% %         saveas(gcf,sprintf('%spair_%d_%d.png',DataPath,iskels(i),iskels(assignment(i))));
+%     end
+% end
 
 %% show all final pairs
 % scsz = get(0,'ScreenSize'); % scsz = [left botton width height]
