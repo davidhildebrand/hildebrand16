@@ -16,13 +16,22 @@ function symmetryshow_pair(P,Q,sp,V,rmin,rmax,i,iname,k,kname,sampfreq)
     
     s = SP(1:sampfreq:size(SP,1),:);
     t = Q(1:sampfreq:size(Q,1),:);
+    n = size(t,1);
+    % change ordering of one skeleton for plotting if necessary
+    % (note this is done in dtw function if needed)
+    if norm(s(1,:)-t(n,:)) < norm(s(1,:)-t(1,:))
+        tp = flipud(t);
+    else
+        tp = t;
+    end
     [aligncost, is, it] = dtw(s,t,'PenalizeUnmatched');
+    %[aligncost, is, it] = dtw(s,t);
     if isempty(is)
         aligncost = Inf;
     end
     if ~isempty(is)
         for pair = 1:1:length(is)
-            plot3([s(is(pair),1) t(it(pair),1)], [s(is(pair),2) t(it(pair),2)], [s(is(pair),3) t(it(pair),3)],'-k')
+            plot3([s(is(pair),1) tp(it(pair),1)], [s(is(pair),2) tp(it(pair),2)], [s(is(pair),3) tp(it(pair),3)],'-k')
         end
     end
     title(sprintf('%s (%d) vs %s (%d) has cost %f', ...
