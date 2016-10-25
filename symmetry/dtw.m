@@ -3,11 +3,13 @@ function [aligncost, is, it] = dtw(s,t,varargin)
 m = size(s,1);
 n = size(t,1);
 
-[~,idx] = sort(s(:,3)); s = s(idx,:);
-[~,idx] = sort(t(:,3)); t = t(idx,:);
-% if norm(s(1,:)-t(n,:)) < norm(s(1,:)-t(1,:))
-%     t = flipud(t);
-% end
+% sort skeletons so that both directions match
+if norm(s(1,:)-t(n,:)) < norm(s(1,:)-t(1,:))
+    t = flipud(t);
+end
+% can sort each by z, but this will not respect treeline
+% [~,idx] = sort(s(:,3)); s = s(idx,:);
+% [~,idx] = sort(t(:,3)); t = t(idx,:);
 
 % plot3(s(:,1),s(:,2),s(:,3)), hold on
 % plot3(s(1,1),s(1,2),s(1,3),'o')
