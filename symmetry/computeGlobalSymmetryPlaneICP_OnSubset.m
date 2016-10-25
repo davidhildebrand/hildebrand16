@@ -4,7 +4,7 @@ clc
 %% settings
 DataPath = 'D:\Dropbox (Personal)\MATLAB\Data\';
 DataFile = '161017t1551_130201zf142_160515SWiFT_ProjOrLngstLtL_ANNOTsymmetry_IGNblacklistsymblack_1umLenThresh_PHYScoord_rootToNaN.txt';
-SubsetFile = '161018t1840_130201zf142_160515SWiFT_SUBSETspinalbackfillsIDENT.txt';
+SubsetFile = '161020t1700_130201zf142_160515SWiFT_SUBSETspinalbackfillsALL.txt';
 
 DateString = datestr(now,30);
 DateString = strrep(DateString(3:length(DateString)-2),'T','t');
@@ -123,7 +123,5 @@ a.Projection = 'perspective';
 linkprop(ax,{'CameraPosition','CameraViewAngle'});
 
 %% save
-% symmetry plane perpendicular vector
-save(strcat(DataPath,filesep,Prefix,'V_from161017t1551exp161018t1840subsetICP.mat'),'V');
-% symmetry plane points
-save(strcat(DataPath,filesep,Prefix,'sp_from161017t1551exp161018t1840subsetICP.mat'),'sp');
+% save plane parameters (perpendicular vector and points)
+save(strcat(DataPath,filesep,Prefix,'plane_from161017t1551exp161020t1700subsetICPnosubsamp.mat'),'V','sp','-v7.3');
