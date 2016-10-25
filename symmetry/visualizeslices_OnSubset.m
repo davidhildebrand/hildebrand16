@@ -1,30 +1,47 @@
 clear
 clc
 
-%% data
+%% settings
+DataPath = 'D:\Dropbox (Personal)\MATLAB\Data\';
+DataFile = '161017t1551_130201zf142_160515SWiFT_ProjOrLngstLtL_ANNOTsymmetry_IGNblacklistsymblack_1umLenThresh_PHYScoord_rootToNaN.txt';
+SubsetFile = '161020t1703_130201zf142_160515SWiFT_SUBSETspinalbackfillsIDENTnoRoM1R.txt';
 
-% --------------------------------------------------
+DateString = datestr(now,30);
+DateString = strrep(DateString(3:length(DateString)-2),'T','t');
+Prefix = strcat(DateString,'_');
+
+% z step size
+%step = 100;
+step = round(2*5000/60); % visualize every 5um
+
+%% --------------------------------------------------
 fprintf('loading data\n');
 % --------------------------------------------------
 
-step = 100;
+% load plane parameters (perpendicular vector and points)
+load(strcat(DataPath,filesep,'161020t1707_plane_from161017t1551exp161020t1700subsetICPnosubsamp.mat')); 
 
 % skeletons
-D = importdata('/home/mc457/Desktop/160808t1608_130201zf142_160515SWiFT_ANNOTsymmetry_IGNblacklistsymblack_LongestLeafToLeaf_20umLenThresh_PHYScoord_rootToNaN.txt');
-S = importdata('/home/mc457/Desktop/160803t1831_130201zf142_160515SWiFT_ANNOTsymmetry_20000lengththresh_PHYScoord_SUBSETnucMLF.txt');
+D = importdata(strcat(DataPath,filesep,DataFile));
+% subset
+S = importdata(strcat(DataPath,filesep,SubsetFile));
 iskels = zeros(1,length(S));
+iskelnames = cell(1,length(S));
 if iscell(S)
     for i = 1:length(S)
         ss = strsplit(S{i},' ');
         iskels(i) = str2double(ss{1});
+        iskelnames{i} = ss{3};
     end
 elseif isnumeric(S)
     for i = 1:length(S)
         iskels(i) = S(i);
+        % set name to skelID if no name in file
+        iskelnames{i} = S(i);
     end
 end
 
-% --------------------------------------------------
+%% --------------------------------------------------
 fprintf('getting range\n');
 % --------------------------------------------------
 
@@ -33,7 +50,7 @@ if ~exist('rg','var')
     rg = max(rmax-rmin);
 end
 
-% --------------------------------------------------
+%% --------------------------------------------------
 fprintf('plot data and planes\n');
 % --------------------------------------------------
 
@@ -44,18 +61,13 @@ P = D(1:step:end,4:6);
 
 plot3(P(:,1),P(:,2),P(:,3),'.'), hold on
 
-load('/home/mc457/Desktop/sp.mat'); % symmetry plane points
-load('/home/mc457/Desktop/V.mat'); % symmetry plane perpendicular vector
-
 fill3(sp(:,1),sp(:,2),sp(:,3),'g'), alpha(0.1), hold off
 
 grid on, axis equal
 xlabel('x'), ylabel('y'), zlabel('z'), title('optimal plane')
 % saveas(gcf,sprintf('~/Desktop/Planes.png'));
 
-%% projections
-
-% --------------------------------------------------
+%% --------------------------------------------------
 fprintf('plot projections\n');
 % --------------------------------------------------
 
@@ -73,10 +85,10 @@ xMax = max(PX);
 yMin = min(PY);
 yMax = max(PY);
 
-
 %% unique assignment pairs, and color scheme
 
-load('/home/mc457/Desktop/asgnm_greedy.mat');
+load(strcat(DataPath,filesep,'161024t1132_assignment_161020t1701subset_161020t1707plane_OHpenalty_dtwFreq17.mat'),'asgnm_gd');
+asgnm = asgnm_gd;
 for i = size(asgnm,1):-1:1
     if asgnm(i,2) == 0
         asgnm(i,:) = [];
@@ -113,13 +125,14 @@ for i = 1:npairs
     sqpairs{i,1} = sqA;%sqA(1:step:end,:);
     sqpairs{i,2} = sqB;%sqB(1:step:end,:);
 end
-save('/home/mc457/Desktop/sqpairs.mat','sqpairs');
+%save('/home/mc457/Desktop/sqpairs.mat','sqpairs');
 % load('/home/mc457/files/CellBiology/IDAC/Marcelo/Hildebrand/sqpairs.mat');
 
 %% display slices in figure
 
+fig40 = figure(40);
 scsz = get(0,'ScreenSize'); % scsz = [left botton width height]
-figure('Position',[scsz(3)/4 scsz(4)/4 scsz(3)/2 scsz(4)/2])
+fig40.Position = [scsz(3)/4 scsz(4)/4 scsz(3)/2 scsz(4)/2];
 allX = []; allY = []; allZ = [];
 for pair = 1:npairs
     xyz = sqpairs{pair,1};
@@ -132,7 +145,8 @@ end
 xmin = min(allX); xmax = max(allX);
 ymin = min(allY); ymax = max(allY);
 zmin = min(allZ); zmax = max(allZ);
-nSlices = 500;
+
+nSlices = floor((zmax-zmin)/60); %500;
 
 for i = 1:nSlices
     % entire set, 3D
@@ -200,16 +214,15 @@ for i = 1:nSlices
     hold off
 %     pause
 %     saveas(gcf,sprintf('~/Desktop/Slices/Slice%05d.png',i));
-    pause(0.1)
+    pause(0.01)
 end
-close all
+% close all
 
 
 %% display slices on image
 
 I = zeros(1000,1000,3);
-
-nSlices = 500;
+figure(50)
 points = nan(nSlices,npairs,4);
 for i = 1:nSlices
     disp(i/nSlices)
@@ -266,32 +279,39 @@ for i = 1:nSlices
     end
     I(500:501,:,:) = 0.5;
     imshow(imrotate(I,90))
-    pause(0.1)
+    pause(0.01)
 %     imwrite(imrotate(I,90),sprintf('~/Desktop/Slices/Slice%05d.png',i));
 end
-save('~/Desktop/points.mat','points')
+%save('~/Desktop/points.mat','points')
 
 %% video from frames
 
- writerObj = VideoWriter('~/Desktop/Slices.avi');
- writerObj.FrameRate = 12;
- open(writerObj);
-for i = 2:215%nSlices
-    disp(i/nSlices)
-    I = imread(sprintf('~/Desktop/Slices/Slice%05d.png',i));
-    writeVideo(writerObj, im2frame(I));
-end
-close(writerObj);
+%  writerObj = VideoWriter('~/Desktop/Slices.avi');
+%  writerObj.FrameRate = 12;
+%  open(writerObj);
+% for i = 2:215%nSlices
+%     disp(i/nSlices)
+%     I = imread(sprintf('~/Desktop/Slices/Slice%05d.png',i));
+%     writeVideo(writerObj, im2frame(I));
+% end
+% close(writerObj);
 
 %% analyze slices
-load('~/Desktop/points.mat')
+%load('~/Desktop/points.mat')
 doplot = 1;
 if doplot
-    figureQSS
+    fig60 = figure(60);
+    scsz = get(0,'ScreenSize'); % scsz = [left botton width height]
+    fig60.Position = [scsz(3)/4 scsz(4)/4 scsz(3)/2 scsz(4)/2];
 end
 frameindex = 0;
 stack = [];
+stackang = [];
+stackdst = [];
+
+% stack = NaN(nSlices,npairs*npairs);
 for i = 1:nSlices
+    fprintf('%d\n',i);
     t = squeeze(points(i,:,:));
     if sum(isnan(t)) == 0
         clf
@@ -384,14 +404,21 @@ for i = 1:nSlices
         W = 0.25*ones(size(I,1),5,3);
         RGB = cat(2,cat(2,I,W),J);
 %         imshow(RGB)
-        pause(0.1)
-        imwrite(RGB,sprintf('~/Desktop/Slices/Slice%05d.png',frameindex))
+        pause(0.01)
+%         imwrite(RGB,sprintf('~/Desktop/Slices/Slice%05d.png',frameindex))
 %         return
         stack = [stack; reshape(RD,1,[])];
+        stackang = [stackang; nonzeros(triu(RD)')'];
+        stackdst = [stackdst; nonzeros(tril(RD)')'];
+    else
+        fprintf('t had NaN value\n');
     end
 end
-if doplot
-    close all
-end
-figure
+% if doplot
+%     close all
+% end
+fig70 = figure(70);
 imshow(flipud(imresize(stack,10,'nearest')))
+fig80 = figure(80);
+subplot(2,1,1), imshow(flipud(imresize(stackang,10,'nearest')))
+subplot(2,1,2), imshow(flipud(imresize(stackdst,10,'nearest')))
