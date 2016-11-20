@@ -1,4 +1,4 @@
-function [aligncost, is, it] = dtw(s,t,varargin)
+function [aligncost, is, it, flipt] = dtw(s,t,varargin)
 
 m = size(s,1);
 n = size(t,1);
@@ -6,6 +6,9 @@ n = size(t,1);
 % sort skeletons so that both directions match
 if norm(s(1,:)-t(n,:)) < norm(s(1,:)-t(1,:))
     t = flipud(t);
+    flipt = 1;
+else
+    flipt = 0;
 end
 % can sort each by z, but this will not respect treeline
 % [~,idx] = sort(s(:,3)); s = s(idx,:);
