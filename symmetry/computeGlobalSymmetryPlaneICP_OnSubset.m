@@ -3,8 +3,11 @@ clc
 
 %% settings
 DataPath = 'D:\Dropbox (Personal)\MATLAB\Data\';
-DataFile = '161017t1551_130201zf142_160515SWiFT_ProjOrLngstLtL_ANNOTsymmetry_IGNblacklistsymblack_1umLenThresh_PHYScoord_rootToNaN.txt';
-SubsetFile = '161020t1700_130201zf142_160515SWiFT_SUBSETspinalbackfillsALL.txt';
+%DataFile = '161101t1056_130201zf142_160515SWiFT_ProjOrLngstLtL_ANNOTsymmetry_IGNblacklistsymblack_1umLenThresh_PHYScoord_rootToNaN.txt';
+DataFile = '161107t1546_130201zf142_160515SWiFT_ProjOrLngstLtL_ANNOTsymmetry_IGNblacklistsymblack_1umLenThresh_PHYScoord_rootToNaN.txt';
+%SubsetFile = '161020t1702_130201zf142_160515SWiFT_SUBSETspinalbackfillsMLF.txt';
+%SubsetFile = '161104t1001_130201zf142_160515SWiFT_SUBSETspinalbackfillsMLF.txt';
+SubsetFile = '161107t1201_130201zf142_160515SWiFT_SUBSETspinalbackfillsMLF.txt';
 
 DateString = datestr(now,30);
 DateString = strrep(DateString(3:length(DateString)-2),'T','t');
@@ -74,8 +77,9 @@ moving = pointCloud(Q);
 
 R = ptCloudAligned.Location;
 
+fig10 = figure(10);
 scsz = get(0,'ScreenSize'); % scsz = [left botton width height]
-figure('Position',[scsz(3)/4 scsz(4)/4 scsz(3)/2 scsz(4)/2])
+fig10.Position = [scsz(3)/4 scsz(4)/4 scsz(3)/2 scsz(4)/2];
 
 ax = zeros(1,3);
 ax(1) = subplot(1,3,1);
@@ -124,4 +128,4 @@ linkprop(ax,{'CameraPosition','CameraViewAngle'});
 
 %% save
 % save plane parameters (perpendicular vector and points)
-save(strcat(DataPath,filesep,Prefix,'plane_from161017t1551exp161020t1700subsetICPnosubsamp.mat'),'V','sp','-v7.3');
+save(strcat(DataPath,filesep,Prefix,'plane_161107t1546data_161107t1201subsetMLF_ICPnosubsamp.mat'),'V','sp','-v7.3');
