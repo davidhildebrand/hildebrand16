@@ -7,7 +7,7 @@ function c = matchingcost_overhangpenalty(P,Q,sp,V,sampfreq)
     SP = reflectedpoints(P,sp,V);
     s = SP(1:sampfreq:size(SP,1),:);
     t = Q(1:sampfreq:size(Q,1),:);
-    [c, is, it] = dtw(s,t,'PenalizeUnmatched');
+    [c, is, ~] = dtw(s,t,'PenalizeUnmatched');
     if isempty(is)
         c = Inf;
     end
