@@ -1,4 +1,4 @@
-function [hImage, hText, hXText] = heatmap(mat, xlab, ylab, textmat, varargin)
+function [hImage, hText, hXText] = heatmapcust(mat, xlab, ylab, textmat, varargin)
 % HEATMAP displays a matrix as a heatmap image
 %
 % USAGE:
