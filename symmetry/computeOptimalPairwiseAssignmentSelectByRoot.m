@@ -9,7 +9,8 @@ DataFile = '161107t1546_130201zf142_160515SWiFT_ProjOrLngstLtL_ANNOTsymmetry_IGN
 %SubsetFile = '161101t1403_130201zf142_160515SWiFT_SUBSETspinalbackfillsIDENTnoRoM1R.txt';
 %SubsetFile = '161020t1701_130201zf142_160515SWiFT_SUBSETspinalbackfillsIDENT.txt';
 %SubsetFile = '161104t1002_130201zf142_160515SWiFT_SUBSETspinalbackfillsIDENT.txt';
-SubsetFile = '161107t1202_130201zf142_160515SWiFT_SUBSETspinalbackfillsIDENT.txt';
+SubsetFile = '161107t1203_130201zf142_160515SWiFT_SUBSETspinalbackfillsIDENTnucMLFandMauthner.txt';
+% SubsetFile = '161107t1202_130201zf142_160515SWiFT_SUBSETspinalbackfillsIDENT.txt';
 
 DateString = datestr(now,30);
 DateString = strrep(DateString(3:length(DateString)-2),'T','t');
@@ -342,9 +343,12 @@ heatmapcust(Cordrsortd,NordR(srtidx),NordL(srtidx),[],'ColorBar',1,'GridLines','
 axis square
 ax = gca;
 ax.TickLength = [0 0];
-% ix = find(Cordrsortd(:)==max(Cordrsortd(:)));
-% [rx,cx] = ind2sub(size(Cordrsortd),ix);
-% Cordrsortd(rx,cx)
+ix = find(Cordrsortd(:)==max(Cordrsortd(:)));
+[rx,cx] = ind2sub(size(Cordrsortd),ix);
+Cordrsortd(rx,cx)
+ix = find(Cordrsortd(:)==min(Cordrsortd(:)));
+[rx,cx] = ind2sub(size(Cordrsortd),ix);
+Cordrsortd(rx,cx)
 
 % generate cost matrix organized by hierarchical clustering
 % T = clusterdata(Cordreorg,length(Cordreorg)/2);
@@ -367,71 +371,71 @@ ax.TickLength = [0 0];
 
 %% save
 % save(strcat(DataPath,filesep,Prefix,'C_160908T1518planeSUBSETsbackfillsICPadj_dtwSampFreq10.mat'),'C','-v7.3');
-save(strcat(DataPath,filesep,Prefix,'compOptPairAssgn_161107t1546data_161107t1202subsetIDENT_161107t1647planeMLF_OHpenalty_dtwFreq',num2str(sampfreq),'.mat'),'-v7.3');
-save(strcat(DataPath,filesep,Prefix,'assignment_161107t1546data_161107t1202subsetIDENT_161107t1647planeMLF_OHpenalty_dtwFreq',num2str(sampfreq),'.mat'),...
+save(strcat(DataPath,filesep,Prefix,'compOptPairAssgn_161107t1546data_161107t1203subsetNucMLFMauth_161107t1647planeMLF_OHpenalty_dtwFreq',num2str(sampfreq),'.mat'),'-v7.3');
+save(strcat(DataPath,filesep,Prefix,'assignment_161107t1546data_161107t1203subsetNucMLFMauth_161107t1647planeMLF_OHpenalty_dtwFreq',num2str(sampfreq),'.mat'),...
     'assignment_mr','assignment_gd','iskelnames','iskels','cost_mr',...
     'cost_gd','costs_gd','C','asgnm','asgnm_mr','asgnm_gd','-v7.3')
 
 %% show unexpected matches
-fig40 = figure(40);
-scsz = get(0,'ScreenSize'); % scsz = [left botton width height]
-fig40.Position = [0 0 scsz(3) scsz(4)];
-for i = 1:length(unexpected)
-    clf
-    [P,~] = getnodes(D,iskels(unexpected(i)));
-    if unexpected(i) > 0
-        [Q,~] = getnodes(D,iskels(assignment(unexpected(i))));
-        symmetryshow_pair(P,Q,sp,V,rmin,rmax,...
-            iskels(unexpected(i)),iskelnames{unexpected(i)},...
-            iskels(assignment(unexpected(i))),iskelnames{assignment(unexpected(i))},...
-            sampfreq);
-        saveas(gcf,sprintf('%s%s161107t1656_pairs%spair__orng_%s__blue_%s.png',DataPath,...
-            filesep,filesep,iskelnames{unexpected(i)},iskelnames{assignment(unexpected(i))}));
-        saveas(gcf,sprintf('%s%s161107t1656_pairs%spair__orng_%s__blue_%s',DataPath,...
-            filesep,filesep,iskelnames{unexpected(i)},iskelnames{assignment(unexpected(i))}),'epsc');
-        pause(0.1)
-    end
-end
+% fig40 = figure(40);
+% scsz = get(0,'ScreenSize'); % scsz = [left botton width height]
+% fig40.Position = [0 0 scsz(3) scsz(4)];
+% for i = 1:length(unexpected)
+%     clf
+%     [P,~] = getnodes(D,iskels(unexpected(i)));
+%     if unexpected(i) > 0
+%         [Q,~] = getnodes(D,iskels(assignment(unexpected(i))));
+%         symmetryshow_pair(P,Q,sp,V,rmin,rmax,...
+%             iskels(unexpected(i)),iskelnames{unexpected(i)},...
+%             iskels(assignment(unexpected(i))),iskelnames{assignment(unexpected(i))},...
+%             sampfreq);
+%         saveas(gcf,sprintf('%s%s161107t1656_pairs%spair__orng_%s__blue_%s.png',DataPath,...
+%             filesep,filesep,iskelnames{unexpected(i)},iskelnames{assignment(unexpected(i))}));
+%         saveas(gcf,sprintf('%s%s161107t1656_pairs%spair__orng_%s__blue_%s',DataPath,...
+%             filesep,filesep,iskelnames{unexpected(i)},iskelnames{assignment(unexpected(i))}),'epsc');
+%         pause(0.1)
+%     end
+% end
  
 %% show all assignment pairs
-fig41 = figure(41);
-scsz = get(0,'ScreenSize'); % scsz = [left botton width height]
-fig41.Position = [0 0 scsz(3) scsz(4)];
-for i = 1:length(assignment)
-    clf
-    [P,~] = getnodes(D,iskels(i));
-    if assignment(i) > 0
-        [Q,~] = getnodes(D,iskels(assignment(i)));
-        symmetryshow_pair(P,Q,sp,V,rmin,rmax,...
-            iskels(i),iskelnames{i},...
-            iskels(assignment(i)),iskelnames{assignment(i)},...
-            sampfreq);
-        saveas(gcf,sprintf('%s%s161107t1656_pairs%spair__orng_%s__blue_%s.png',DataPath,...
-            filesep,filesep,iskelnames{i},iskelnames{assignment(i)}));
-        saveas(gcf,sprintf('%s%s161107t1656_pairs%spair__orng_%s__blue_%s',DataPath,...
-            filesep,filesep,iskelnames{unexpected(i)},iskelnames{assignment(unexpected(i))}),'epsc');
-         pause(0.1)
-    end
-end
+% fig41 = figure(41);
+% scsz = get(0,'ScreenSize'); % scsz = [left botton width height]
+% fig41.Position = [0 0 scsz(3) scsz(4)];
+% for i = 1:length(assignment)
+%     clf
+%     [P,~] = getnodes(D,iskels(i));
+%     if assignment(i) > 0
+%         [Q,~] = getnodes(D,iskels(assignment(i)));
+%         symmetryshow_pair(P,Q,sp,V,rmin,rmax,...
+%             iskels(i),iskelnames{i},...
+%             iskels(assignment(i)),iskelnames{assignment(i)},...
+%             sampfreq);
+%         saveas(gcf,sprintf('%s%s161107t1656_pairs%spair__orng_%s__blue_%s.png',DataPath,...
+%             filesep,filesep,iskelnames{i},iskelnames{assignment(i)}));
+%         saveas(gcf,sprintf('%s%s161107t1656_pairs%spair__orng_%s__blue_%s',DataPath,...
+%             filesep,filesep,iskelnames{unexpected(i)},iskelnames{assignment(unexpected(i))}),'epsc');
+%          pause(0.1)
+%     end
+% end
 
 %% show all pairs
-fig42 = figure(42);
-scsz = get(0,'ScreenSize'); % scsz = [left botton width height]
-fig42.Position = [0 0 scsz(3) scsz(4)];
-for i = 1:size(Cord,1)
-    for j = 1:size(Cord,2)
-        clf
-        k = j+size(Cord,1);
-        [P,~] = getnodes(D,iskels(i));
-        [Q,~] = getnodes(D,iskels(k));
-        symmetryshow_pair(P,Q,sp,V,rmin,rmax,...
-            iskels(i),iskelnames{i},...
-            iskels(k),iskelnames{k},...
-            sampfreq);
-        saveas(gcf,sprintf('%s%s161109t1700_pairs%spair__orng_%s__blue_%s.png',DataPath,...
-            filesep,filesep,iskelnames{i},iskelnames{k}));
-        saveas(gcf,sprintf('%s%s161109t1700_pairs%spair__orng_%s__blue_%s',DataPath,...
-            filesep,filesep,iskelnames{i},iskelnames{k}),'epsc');
-        pause(0.1)
-    end
-end
+% fig42 = figure(42);
+% scsz = get(0,'ScreenSize'); % scsz = [left botton width height]
+% fig42.Position = [0 0 scsz(3) scsz(4)];
+% for i = 1:size(Cord,1)
+%     for j = 1:size(Cord,2)
+%         clf
+%         k = j+size(Cord,1);
+%         [P,~] = getnodes(D,iskels(i));
+%         [Q,~] = getnodes(D,iskels(k));
+%         symmetryshow_pair(P,Q,sp,V,rmin,rmax,...
+%             iskels(i),iskelnames{i},...
+%             iskels(k),iskelnames{k},...
+%             sampfreq);
+%         saveas(gcf,sprintf('%s%s161109t1700_pairs%spair__orng_%s__blue_%s.png',DataPath,...
+%             filesep,filesep,iskelnames{i},iskelnames{k}));
+%         saveas(gcf,sprintf('%s%s161109t1700_pairs%spair__orng_%s__blue_%s',DataPath,...
+%             filesep,filesep,iskelnames{i},iskelnames{k}),'epsc');
+%         pause(0.1)
+%     end
+% end
