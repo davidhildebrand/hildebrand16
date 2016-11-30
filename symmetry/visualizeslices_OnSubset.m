@@ -1023,11 +1023,6 @@ saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseCosts_SubsetProj_Shuf'),'epsc
 saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseCosts_SubsetProj_Shuf'),'svg');
 
 % plot of summed normalzied angle and normalized dist differences
-% stack_shuf = stack;
-% stackang_shuf = stackang;
-% stackdst_shuf = stackdst;
-% stackNaN_shuf = stackNaN;
-% load(strcat(DataPath,filesep,'161121t1410_stacks_NotShuffled.mat'),'stack','stackang','stackdst','stackNaN')
 stackNaN_nsum = nansum(stackNaN,1);
 stackNaN_sum = smooth(stackNaN_nsum,0.005,'rloess'); %stackNaN_nsum;
 stackNaN_shuf_nsum = nansum(stackNaN_shuf,1);
