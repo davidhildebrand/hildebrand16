@@ -23,8 +23,7 @@ fprintf('loading data\n');
 %load(strcat(DataPath,filesep,'161104t1003_plane_161101t1056data_161104t1001subsetMLF_ICPnosubsamp.mat'));
 load(strcat(DataPath,filesep,'161107t1647_plane_161107t1546data_161107t1201subsetMLF_ICPnosubsamp.mat'));
 %load(strcat(DataPath,filesep,'161104t1004_assignment_161101t1056data_161104t1002subsetIDENT_161104t1003planeMLF_OHpenalty_dtwFreq17.mat'),'asgnm_gd');
-load(strcat(DataPath,filesep,'161121t1410_assignment_161107t1546data_161107t1203subsetNucMLFMauth_161107t1647planeMLF_OHpenalty_dtwFreq17.mat'),'asgnm_mr');
-load(strcat(DataPath,filesep,'161121t1410_assignment_161107t1546data_161107t1203subsetNucMLFMauth_161107t1647planeMLF_OHpenalty_dtwFreq17.mat'),'C');
+load(strcat(DataPath,filesep,'161121t1410_assignment_161107t1546data_161107t1203subsetNucMLFMauth_161107t1647planeMLF_OHpenalty_dtwFreq17.mat'),'asgnm_mr','C');
 
 % skeletons
 D = importdata(strcat(DataPath,filesep,DataFile));
@@ -111,7 +110,6 @@ for i = size(asgnm,1):-1:1
         asgnm(i,:) = [];
     end
 end
-
 asgnm2 = asgnm(1,:);
 for i = 2:size(asgnm,1)
     t = 0;
@@ -137,12 +135,32 @@ end
 paircosts(im1) = Inf;
 [~,im2] = min(paircosts);
 
-asgnm_shuf = asgnm;
 disp(asgnm)
+assignment = asgnm(:,2);
+for i = 1:length(assignment)
+    if assignment(i) == 0
+        fprintf('%s (%d) matched NONE\n',iskelnames{i},iskels(i))
+        continue
+    end
+    fprintf('%s (%d) matched to %s (%d)\n',...
+        iskelnames{i},iskels(i),...
+        iskelnames{assignment(i)},iskels(assignment(i)));
+end
 fprintf('\n')
+asgnm_shuf = asgnm;
 asgnm_shuf([im1 im2],2) = flipud(asgnm([im1 im2],2));
 npairs_shuf = size(asgnm_shuf,1);
 disp(asgnm_shuf)
+assignment_shuf = asgnm_shuf(:,2);
+for i = 1:length(assignment_shuf)
+    if assignment_shuf(i) == 0
+        fprintf('%s (%d) matched NONE\n',iskelnames{i},iskels(i))
+        continue
+    end
+    fprintf('%s (%d) matched to %s (%d)\n',...
+        iskelnames{i},iskels(i),...
+        iskelnames{assignment_shuf(i)},iskels(assignment_shuf(i)));
+end
 
 % generate colors in case not pulling them directly from subset file
 hues = (randperm(npairs)-1)/npairs;%*2/3;
@@ -201,6 +219,7 @@ ymin_shuf = min(allY_shuf); ymax_shuf = max(allY_shuf);
 zmin_shuf = min(allZ_shuf); zmax_shuf = max(allZ_shuf);
 
 nSlices = floor((zmax-zmin)/60);
+nSlices = round(nSlices/(2*5.25945));
 
 %% display slices in figure (optional)
 
@@ -556,6 +575,10 @@ nStackRows_shuf = (npairs_shuf)*(npairs_shuf-1);
 stack_shuf = zeros(nStackRows_shuf,nSlices,3);
 stackNaN_shuf = nan(nStackRows_shuf,nSlices);
 stackNaNum_shuf = nan(nStackRows_shuf,nSlices);
+RDum_all = nan(npairs,npairs,nSlices);
+RD_all = nan(npairs,npairs,nSlices);
+RDum_shuf_all = nan(npairs,npairs,nSlices);
+RD_shuf_all = nan(npairs,npairs,nSlices);
 frameindex = 0;
 for i = 1:nSlices
     disp(i/nSlices)
@@ -690,8 +713,8 @@ for i = 1:nSlices
     colormap('winter')
     WinterMap = colormap;
     
-    rd = [];
     rdum = [];
+    rd = [];
     for ii = 1:size(RD,1)-1
         for jj = ii+1:size(RD,2)
             rdum = [rdum RDum(ii,jj)];
@@ -708,7 +731,7 @@ for i = 1:nSlices
     % rd = [rd; nonzeros(tril(RD))];
     for ii = 1:length(rd)
         if isnan(rd(ii))
-            stack(ii,i,1) = 0.25;
+            stack(ii,i,1) = 0.0;
         else
             %stack(ii,i,:) = rd(ii);
             graylevel = rd(ii);
@@ -717,9 +740,11 @@ for i = 1:nSlices
             stack(ii,i,:) = reshape(mapcolor,[1 1 3]);
         end
     end
-    stackNaN(:,i) = rd';
     stackNaNum(:,i) = rdum';
-    
+    RDum_all(:,:,i) = RDum;
+    stackNaN(:,i) = rd';
+    RD_all(:,:,i) = RD;
+
     rd_shuf = [];
     rdum_shuf = [];
     for ii_shuf = 1:size(RD_shuf,1)-1
@@ -738,7 +763,7 @@ for i = 1:nSlices
     % rd = [rd; nonzeros(tril(RD))];
     for ii_shuf = 1:length(rd_shuf)
         if isnan(rd_shuf(ii_shuf))
-            stack_shuf(ii_shuf,i,1) = 0.25;
+            stack_shuf(ii_shuf,i,1) = 0.0;
         else
             %stack(ii,i,:) = rd(ii);
             graylevel_shuf = rd_shuf(ii_shuf);
@@ -747,8 +772,10 @@ for i = 1:nSlices
             stack_shuf(ii_shuf,i,:) = reshape(mapcolor_shuf,[1 1 3]);
         end
     end
-    stackNaN_shuf(:,i) = rd_shuf';
     stackNaNum_shuf(:,i) = rdum_shuf';
+    RDum_shuf_all(:,:,i) = RDum_shuf;
+    stackNaN_shuf(:,i) = rd_shuf';
+    RD_shuf_all(:,:,i) = RD_shuf;
     
     if dodraw
         fig23 = figure(23);
@@ -790,7 +817,7 @@ for i = 1:nSlices
             end
         end
         J = insertText(J, [10 380], 'distance difference','TextColor','white','BoxOpacity',0.0);
-        J = insertText(J, [295 -1], 'angle difference','TextColor','white','BoxOpacity',0.0);
+        J = insertText(J, [295 1], 'angle difference','TextColor','white','BoxOpacity',0.0);
         for ii = 1:400
             J(ii,ii,:) = 0.25;
         end
@@ -799,12 +826,12 @@ for i = 1:nSlices
         stackTop = stack(1:size(stack,1)/2,:,:);
         stackBot = stack(size(stack,1)/2+1:end,:,:);
         stack2 = imresize(stackTop,[50 805],'nearest');
-        stack2 = insertText(stack2, [5 3], sprintf('aggregate angle difference'),'TextColor','white','BoxOpacity',0.0);
+        stack2 = insertText(stack2, [5 1], sprintf('aggregate angle\ndifference'),'TextColor','white','BoxOpacity',0.0);
         W = 0.25*ones(5,size(RGB,2),3);
         RGB = cat(1,RGB,W);
         RGB = cat(1,RGB,stack2);
         stack2 = imresize(stackBot,[50 805],'nearest');
-        stack2 = insertText(stack2, [5 3], sprintf('aggregate distance difference'),'TextColor','white','BoxOpacity',0.0);
+        stack2 = insertText(stack2, [5 1], sprintf('aggregate distance\ndifference'),'TextColor','white','BoxOpacity',0.0);
         W = 0.25*ones(1,size(RGB,2),3);
         RGB = cat(1,RGB,W);
         RGB = cat(1,RGB,stack2);
@@ -821,9 +848,9 @@ for i = 1:nSlices
         map2 = insertText(map2, [5 3], 'location','TextColor','white','BoxOpacity',0.0);
         RGB = cat(1,RGB,map2);
         %imshow(RGB)
-        mkdir(strcat(DataPath,filesep,Prefix,'video'))
-        imwrite(RGB,strcat(DataPath,filesep,Prefix,'video',filesep,...
-          sprintf('idx%05d.png',frameindex)))
+        %mkdir(strcat(DataPath,filesep,Prefix,'video_900slices'))
+        %imwrite(RGB,strcat(DataPath,filesep,Prefix,'video_900slices',filesep,...
+        %  sprintf('idx%05d.png',frameindex)))
         %pause(0.01)
         
         fig24 = figure(24);
@@ -864,7 +891,7 @@ for i = 1:nSlices
             end
         end
         J_shuf = insertText(J_shuf, [10 380], 'distance difference','TextColor','white','BoxOpacity',0.0);
-        J_shuf = insertText(J_shuf, [295 -1], 'angle difference','TextColor','white','BoxOpacity',0.0);
+        J_shuf = insertText(J_shuf, [295 1], 'angle difference','TextColor','white','BoxOpacity',0.0);
         for ii_shuf = 1:400
             J_shuf(ii_shuf,ii_shuf,:) = 0.25;
         end
@@ -873,12 +900,12 @@ for i = 1:nSlices
         stackTop_shuf = stack_shuf(1:size(stack_shuf,1)/2,:,:);
         stackBot_shuf = stack_shuf(size(stack_shuf,1)/2+1:end,:,:);
         stack2_shuf = imresize(stackTop_shuf,[50 805],'nearest');
-        stack2_shuf = insertText(stack2_shuf, [5 3], sprintf('aggregate angle difference'),'TextColor','white','BoxOpacity',0.0);
+        stack2_shuf = insertText(stack2_shuf, [5 1], sprintf('aggregate angle\ndifference'),'TextColor','white','BoxOpacity',0.0);
         W_shuf = 0.25*ones(5,size(RGB_shuf,2),3);
         RGB_shuf = cat(1,RGB_shuf,W_shuf);
         RGB_shuf = cat(1,RGB_shuf,stack2_shuf);
         stack2_shuf = imresize(stackBot_shuf,[50 805],'nearest');
-        stack2_shuf = insertText(stack2_shuf, [5 3], sprintf('aggregate distance difference'),'TextColor','white','BoxOpacity',0.0);
+        stack2_shuf = insertText(stack2_shuf, [5 1], sprintf('aggregate distance\ndifference'),'TextColor','white','BoxOpacity',0.0);
         W_shuf = 0.25*ones(1,size(RGB_shuf,2),3);
         RGB_shuf = cat(1,RGB_shuf,W_shuf);
         RGB_shuf = cat(1,RGB_shuf,stack2_shuf);
@@ -895,9 +922,9 @@ for i = 1:nSlices
         map2_shuf = insertText(map2_shuf, [5 3], 'location','TextColor','white','BoxOpacity',0.0);
         RGB_shuf = cat(1,RGB_shuf,map2_shuf);
         %imshow(RGB_shuf)
-        mkdir(strcat(DataPath,filesep,Prefix,'video_shuf'))
-        imwrite(RGB,strcat(DataPath,filesep,Prefix,'video_shuf',filesep,...
-          sprintf('idx%05d.png',frameindex)))
+        %mkdir(strcat(DataPath,filesep,Prefix,'video_900slices_shuf'))
+        %imwrite(RGB,strcat(DataPath,filesep,Prefix,'video_900slices_shuf',filesep,...
+        %  sprintf('idx%05d.png',frameindex)))
         %pause(0.01)
     end
 end
@@ -923,8 +950,8 @@ heatmapper(stackang,[],[],[],'ColorBar',1,'UseLogColormap',false,...
 ax = gca;
 ax.TickLength = [0 0];
 set(gcf,'PaperPositionMode','auto')
-saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseCosts_Ang'),'epsc');
-saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseCosts_Ang'),'svg');
+% saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseCosts_Ang'),'epsc');
+% saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseCosts_Ang'),'svg');
 
 % heatmap shuffle angle difference
 fig72 = figure(72); clf;
@@ -935,8 +962,8 @@ heatmapper(stackang_shuf,[],[],[],'ColorBar',1,'UseLogColormap',false,...
 ax_shuf = gca;
 ax_shuf.TickLength = [0 0];
 set(gcf,'PaperPositionMode','auto')
-saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseCosts_Ang_Shuf'),'epsc');
-saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseCosts_Ang_Shuf'),'svg');
+% saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseCosts_Ang_Shuf'),'epsc');
+% saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseCosts_Ang_Shuf'),'svg');
 
 % heatmap distance difference
 fig73 = figure(73); clf;
@@ -948,8 +975,8 @@ heatmapper(stackdst,[],[],{},'ColorBar',1,'UseLogColormap',false,...
 ax = gca;
 ax.TickLength = [0 0];
 set(gcf,'PaperPositionMode','auto')
-saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseCosts_Dist'),'epsc');
-saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseCosts_Dist'),'svg');
+% saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseCosts_Dist'),'epsc');
+% saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseCosts_Dist'),'svg');
 
 % heatmap shuffle distance difference
 fig74 = figure(74); clf;
@@ -961,8 +988,8 @@ heatmapper(stackdst_shuf,[],[],{},'ColorBar',1,'UseLogColormap',false,...
 ax_shuf = gca;
 ax_shuf.TickLength = [0 0];
 set(gcf,'PaperPositionMode','auto')
-saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseCosts_Dist_Shuf'),'epsc');
-saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseCosts_Dist_Shuf'),'svg');
+% saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseCosts_Dist_Shuf'),'epsc');
+% saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseCosts_Dist_Shuf'),'svg');
 
 % projection map
 fig75 = figure(75); clf;
@@ -990,8 +1017,8 @@ set(gcf,'PaperPositionMode','auto')
 view(0,180)
 set(gca,'YTickLabel',{'-20000','0','20000','40000'})
 set(gca,'XGrid','on','YGrid','on','TickDir','out')
-saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseCosts_SubsetProj'),'epsc');
-saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseCosts_SubsetProj'),'svg');
+% saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseCosts_SubsetProj'),'epsc');
+% saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseCosts_SubsetProj'),'svg');
 
 % shuffle projection map
 fig76 = figure(76); clf;
@@ -1019,8 +1046,8 @@ set(gcf,'PaperPositionMode','auto')
 view(0,180)
 set(gca,'YTickLabel',{'-20000','0','20000','40000'})
 set(gca,'XGrid','on','YGrid','on','TickDir','out')
-saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseCosts_SubsetProj_Shuf'),'epsc');
-saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseCosts_SubsetProj_Shuf'),'svg');
+% saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseCosts_SubsetProj_Shuf'),'epsc');
+% saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseCosts_SubsetProj_Shuf'),'svg');
 
 % plot of summed normalzied angle and normalized dist differences
 stackNaN_nsum = nansum(stackNaN,1);
@@ -1037,8 +1064,55 @@ box off
 % axis equal
 set(gcf,'PaperPositionMode','auto')
 ylim([0 10]); xlim([1 size(stackNaN,2)]);
-saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseComp_StackSumPlot'),'epsc');
-saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseComp_StackSumPlot'),'svg');
+% saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseComp_StackSumPlot'),'epsc');
+% saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseComp_StackSumPlot'),'svg');
+
+% variance along z
+% hmcolmap = flipud(double(parula));
+fig81 = figure(81); clf;
+fig81.Position = [0 0 500 500];
+RD_var = nanvar(RD_all,1,3);
+heatmapcust(RD_var,[],[],[],'ColorBar',1,'GridLines','-',...
+    'TickAngle',270,'ShowAllTicks',1,'UseLogColormap',false,...
+    'Colormap',parula,'MaxColorValue',0.1250,'MinColorValue',0);
+hold on
+ax = gca;
+ax.TickLength = [0 0];
+for c=1:size(RD_var,1)
+    for r=1:size(RD_var,2)
+        pos1 = [(c-0.25) (r-0.1) 0.25 0.25];
+        pos2 = [(c) (r-0.1) 0.25 0.25];
+        if c == r
+            continue
+        end
+        if c < r
+            rectangle('Position',pos1,'Curvature',[1 1],...
+                'FaceColor',rgbs(c,:),'LineWidth',0.1);
+            rectangle('Position',pos2,'Curvature',[1 1],...
+                'FaceColor',rgbs(r,:),'LineWidth',0.1);
+        else
+            rectangle('Position',pos1,'Curvature',[1 1],...
+                'FaceColor',rgbs(r,:),'LineWidth',0.1);
+            rectangle('Position',pos2,'Curvature',[1 1],...
+                'FaceColor',rgbs(c,:),'LineWidth',0.1);
+        end
+    end
+end
+hold off
+axis square
+saveas(gcf,strcat(DataPath,filesep,Prefix,'HeatMap_Variance'),'epsc');
+saveas(gcf,strcat(DataPath,filesep,Prefix,'HeatMap_Variance'),'svg');
+
+% suffle variance along z
+fig82 = figure(82); clf;
+fig82.Position = [0 0 500 500];
+RD_shuf_var = nanvar(RD_shuf_all,1,3);
+heatmapcust(RD_shuf_var,[],[],[],'ColorBar',1,'GridLines','-',...
+    'TickAngle',270,'ShowAllTicks',1,'UseLogColormap',false,...
+    'Colormap',parula,'MaxColorValue',0.1,'MinColorValue',0);
+axis square
+ax = gca;
+ax.TickLength = [0 0];
 
 %% video from frames
 
