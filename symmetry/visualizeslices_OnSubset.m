@@ -208,6 +208,9 @@ end
 xmin = min(allX); xmax = max(allX);
 ymin = min(allY); ymax = max(allY);
 zmin = min(allZ); zmax = max(allZ);
+axmax = max(-xmin,xmax);
+aymax = max(-ymin,ymax);
+azmax = max(-zmin,zmax);
 
 allX_shuf = []; allY_shuf = []; allZ_shuf = [];
 for pair_shuf = 1:npairs_shuf
@@ -221,6 +224,9 @@ end
 xmin_shuf = min(allX_shuf); xmax_shuf = max(allX_shuf);
 ymin_shuf = min(allY_shuf); ymax_shuf = max(allY_shuf);
 zmin_shuf = min(allZ_shuf); zmax_shuf = max(allZ_shuf);
+axmax_shuf = max(-xmin_shuf,xmax_shuf);
+aymax_shuf = max(-ymin_shuf,ymax_shuf);
+azmax_shuf = max(-zmin_shuf,zmax_shuf);
 
 nSlices = floor((zmax-zmin)/60);
 % nSlices = round(nSlices/(2*5.25945));
@@ -585,6 +591,8 @@ RD_all = nan(npairs,npairs,nSlices);
 RDum_shuf_all = nan(npairs,npairs,nSlices);
 RD_shuf_all = nan(npairs,npairs,nSlices);
 frameindex = 0;
+a1122 = [];
+a1122_shuf = [];
 for ni = 1:nSlices
     i = nSlices-ni+1;
     disp(i/nSlices)
@@ -613,12 +621,14 @@ for ni = 1:nSlices
 
         if dodraw
             if ~isnan(x1) && ~isnan(y1)
-                x1 = (x1-xmin)/(xmax-xmin)*400;
+                %x1 = (x1-xmin)/(xmax-xmin)*400;
+                x1 = 200+x1/axmax*199;
                 y1 = 400-(y1-ymin)/(ymax-ymin)*400;
                 I = insertShape(I,'circle',[x1 y1 5],'LineWidth',2,'Color',rgbs(pair,:));
             end
             if ~isnan(x2) && ~isnan(y2)
-                x2 = (x2-xmin)/(xmax-xmin)*400;
+                %x2 = (x2-xmin)/(xmax-xmin)*400;
+                x2 = 200+x2/axmax*199;
                 y2 = 400-(y2-ymin)/(ymax-ymin)*400;
                 I = insertShape(I,'circle',[x2 y2 5],'LineWidth',2,'Color',rgbs(pair,:));
             end
@@ -640,12 +650,14 @@ for ni = 1:nSlices
 
         if dodraw
             if ~isnan(x1_shuf) && ~isnan(y1_shuf)
-                x1_shuf = (x1_shuf-xmin_shuf)/(xmax_shuf-xmin_shuf)*400;
+                %x1_shuf = (x1_shuf-xmin_shuf)/(xmax_shuf-xmin_shuf)*400;
+                x1_shuf = 200+x1_shuf/axmax_shuf*199;
                 y1_shuf = 400-(y1_shuf-ymin_shuf)/(ymax_shuf-ymin_shuf)*400;
                 I_shuf = insertShape(I_shuf,'circle',[x1_shuf y1_shuf 5],'LineWidth',2,'Color',rgbs_shuf(pair_shuf,:));
             end
             if ~isnan(x2_shuf) && ~isnan(y2_shuf)
-                x2_shuf = (x2_shuf-xmin_shuf)/(xmax_shuf-xmin_shuf)*400;
+                %x2_shuf = (x2_shuf-xmin_shuf)/(xmax_shuf-xmin_shuf)*400;
+                x2_shuf = 200+x2_shuf/axmax_shuf*199;
                 y2_shuf = 400-(y2_shuf-ymin_shuf)/(ymax_shuf-ymin_shuf)*400;
                 I_shuf = insertShape(I_shuf,'circle',[x2_shuf y2_shuf 5],'LineWidth',2,'Color',rgbs_shuf(pair_shuf,:));
             end
@@ -671,6 +683,10 @@ for ni = 1:nSlices
             nn = abs(n2-n1);
             if n1 > 0 && n2 > 0
                 RD(ii,jj) = (1-dot(r1/n1,r2/n2))/2;
+                if ii == 1 && jj == 2
+                    v12 = r1/n1;
+                    a1122 = [a1122; atan2(v12(2),v12(1))];
+                end
             else
                 RD(ii,jj) = NaN;
             end
@@ -702,6 +718,10 @@ for ni = 1:nSlices
             nn_shuf = abs(n2_shuf-n1_shuf);
             if n1_shuf > 0 && n2_shuf > 0
                 RD_shuf(ii_shuf,jj_shuf) = (1-dot(r1_shuf/n1_shuf,r2_shuf/n2_shuf))/2;
+                if ii_shuf == 1 && jj_shuf == 2
+                    v12_shuf = r1_shuf/n1_shuf;
+                    a1122_shuf = [a1122_shuf; atan2(v12_shuf(2),v12_shuf(1))];
+                end
             else
                 RD_shuf(ii_shuf,jj_shuf) = NaN;
             end
