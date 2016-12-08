@@ -3,14 +3,9 @@ clc
 
 %% settings
 DataPath = 'D:\Dropbox (Personal)\MATLAB\Data\';
-%DataFile = '161101t1056_130201zf142_160515SWiFT_ProjOrLngstLtL_ANNOTsymmetry_IGNblacklistsymblack_1umLenThresh_PHYScoord_rootToNaN.txt';
 DataFile = '161107t1546_130201zf142_160515SWiFT_ProjOrLngstLtL_ANNOTsymmetry_IGNblacklistsymblack_1umLenThresh_PHYScoord_rootToNaN.txt';
-%SubsetFile = '161101t1401_130201zf142_160515SWiFT_SUBSETspinalbackfillsIDENT.txt';
-%SubsetFile = '161101t1403_130201zf142_160515SWiFT_SUBSETspinalbackfillsIDENTnoRoM1R.txt';
-%SubsetFile = '161020t1701_130201zf142_160515SWiFT_SUBSETspinalbackfillsIDENT.txt';
-%SubsetFile = '161104t1002_130201zf142_160515SWiFT_SUBSETspinalbackfillsIDENT.txt';
-SubsetFile = '161107t1203_130201zf142_160515SWiFT_SUBSETspinalbackfillsIDENTnucMLFandMauthner.txt';
-% SubsetFile = '161107t1202_130201zf142_160515SWiFT_SUBSETspinalbackfillsIDENT.txt';
+%SubsetFile = '161107t1203_130201zf142_160515SWiFT_SUBSETspinalbackfillsIDENTnucMLFandMauthner.txt';
+SubsetFile = '161107t1202_130201zf142_160515SWiFT_SUBSETspinalbackfillsIDENT.txt';
 
 DateString = datestr(now,30);
 DateString = strrep(DateString(3:length(DateString)-2),'T','t');
@@ -21,10 +16,6 @@ fprintf('loading data\n');
 % --------------------------------------------------
 
 % load plane parameters (perpendicular vector and points)
-% load(strcat(DataPath,filesep,'161020t1707_plane_from161017t1551exp161020t1700subsetICPnosubsamp.mat'));
-% load(strcat(DataPath,filesep,'161101t1405_plane_from161101t1056exp161101t1400subsetICPnosubsamp.mat'));
-%load(strcat(DataPath,filesep,'161104t0932_plane_from161101t1056exp161020t1702subsetICPnosubsamp.mat'));
-%load(strcat(DataPath,filesep,'161104t1003_plane_161101t1056data_161104t1001subsetMLF_ICPnosubsamp.mat'));
 load(strcat(DataPath,filesep,'161107t1647_plane_161107t1546data_161107t1201subsetMLF_ICPnosubsamp.mat'));
 
 % skeletons
