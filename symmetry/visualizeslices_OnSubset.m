@@ -4,15 +4,14 @@ clc
 %% settings
 DataPath = 'D:\Dropbox (Personal)\MATLAB\Data\';
 DataFile = '161107t1546_130201zf142_160515SWiFT_ProjOrLngstLtL_ANNOTsymmetry_IGNblacklistsymblack_1umLenThresh_PHYScoord_rootToNaN.txt';
-%SubsetFile = '161104t1002_130201zf142_160515SWiFT_SUBSETspinalbackfillsIDENT.txt';
 SubsetFile = '161107t1203_130201zf142_160515SWiFT_SUBSETspinalbackfillsIDENTnucMLFandMauthner.txt';
+% SubsetFile = '161107t1202_130201zf142_160515SWiFT_SUBSETspinalbackfillsIDENT.txt';
 
 DateString = datestr(now,30);
 DateString = strrep(DateString(3:length(DateString)-2),'T','t');
 Prefix = strcat(DateString,'_');
 
 % z step size
-%step = 100;
 step = round(1*1000/60); % visualize every 1um
 
 %% --------------------------------------------------
@@ -20,10 +19,9 @@ fprintf('loading data\n');
 % --------------------------------------------------
 
 % load plane parameters (perpendicular vector and points)
-%load(strcat(DataPath,filesep,'161104t1003_plane_161101t1056data_161104t1001subsetMLF_ICPnosubsamp.mat'));
 load(strcat(DataPath,filesep,'161107t1647_plane_161107t1546data_161107t1201subsetMLF_ICPnosubsamp.mat'));
-%load(strcat(DataPath,filesep,'161104t1004_assignment_161101t1056data_161104t1002subsetIDENT_161104t1003planeMLF_OHpenalty_dtwFreq17.mat'),'asgnm_gd');
 load(strcat(DataPath,filesep,'161121t1410_assignment_161107t1546data_161107t1203subsetNucMLFMauth_161107t1647planeMLF_OHpenalty_dtwFreq17.mat'),'asgnm_mr','C');
+% load(strcat(DataPath,filesep,'161112t0241_assignment_161107t1546data_161107t1202subsetIDENT_161107t1647planeMLF_OHpenalty_dtwFreq17.mat'),'asgnm_mr','C');
 
 % skeletons
 D = importdata(strcat(DataPath,filesep,DataFile));
@@ -72,14 +70,17 @@ end
 fprintf('plot data and planes\n');
 % --------------------------------------------------
 
-fig15 = figure(15);
-scsz = get(0,'ScreenSize'); % scsz = [left botton width height]
-fig15.Position = [scsz(3)/4 scsz(4)/4 scsz(3)/2 scsz(4)/2];
-plot3(P(:,1),P(:,2),P(:,3),'.'), hold on
-fill3(sp(:,1),sp(:,2),sp(:,3),'g'), alpha(0.1), hold off
-grid on, axis equal
-xlabel('x'), ylabel('y'), zlabel('z'), title('plane')
-% saveas(gcf,sprintf('~/Desktop/Planes.png'));
+doplot = 0;
+if doplot
+    fig15 = figure(15);
+    scsz = get(0,'ScreenSize'); % scsz = [left botton width height]
+    fig15.Position = [scsz(3)/4 scsz(4)/4 scsz(3)/2 scsz(4)/2];
+    plot3(P(:,1),P(:,2),P(:,3),'.'), hold on
+    fill3(sp(:,1),sp(:,2),sp(:,3),'g'), alpha(0.1), hold off
+    grid on, axis equal
+    xlabel('x'), ylabel('y'), zlabel('z'), title('plane')
+    % saveas(gcf,sprintf('~/Desktop/Planes.png'));
+end
 
 %% --------------------------------------------------
 fprintf('plot projections\n');
@@ -87,13 +88,16 @@ fprintf('plot projections\n');
 
 [PX,PY,PZ] = symplanecoord(P,sp,V);
 
-fig16 = figure(16);
-scsz = get(0,'ScreenSize'); % scsz = [left botton width height]
-fig16.Position = [scsz(3)/4 scsz(4)/4 scsz(3)/2 scsz(4)/2];
-subplot(1,3,1), plot(PX,PY,'.','MarkerSize',1), title('top'), axis equal
-subplot(1,3,2), plot(PX,PZ,'.','MarkerSize',1), title('front'), axis equal
-subplot(1,3,3), plot(PY,PZ,'.','MarkerSize',1), title('side'), axis equal
-% saveas(gcf,sprintf('~/Desktop/Projections.png'));
+doplot = 0;
+if doplot
+    fig16 = figure(16);
+    scsz = get(0,'ScreenSize'); % scsz = [left botton width height]
+    fig16.Position = [scsz(3)/4 scsz(4)/4 scsz(3)/2 scsz(4)/2];
+    subplot(1,3,1), plot(PX,PY,'.','MarkerSize',1), title('top'), axis equal
+    subplot(1,3,2), plot(PX,PZ,'.','MarkerSize',1), title('front'), axis equal
+    subplot(1,3,3), plot(PY,PZ,'.','MarkerSize',1), title('side'), axis equal
+    % saveas(gcf,sprintf('~/Desktop/Projections.png'));
+end
 
 zMin = min(PZ);
 zMax = max(PZ);
@@ -219,7 +223,7 @@ ymin_shuf = min(allY_shuf); ymax_shuf = max(allY_shuf);
 zmin_shuf = min(allZ_shuf); zmax_shuf = max(allZ_shuf);
 
 nSlices = floor((zmax-zmin)/60);
-nSlices = round(nSlices/(2*5.25945));
+% nSlices = round(nSlices/(2*5.25945));
 
 %% display slices in figure (optional)
 
@@ -344,7 +348,6 @@ for i = 1:nSlices
         imshow(imrotate(I,90))
     end
     %pause(0.01)
-    %imwrite(imrotate(I,90),sprintf('~/Desktop/Slices/Slice%05d.png',i));
 end
 
 % display slices on image for shuffle
@@ -395,74 +398,75 @@ for i_shuf = 1:nSlices
         imshow(imrotate(I_shuf,90))
     end
     %pause(0.01)
-    %imwrite(imrotate(I,90),sprintf('~/Desktop/Slices/Slice%05d.png',i));
 end
 
 %% analyze slices
 
 % compute distance normalization
-mx = 0;
-for i = 1:nSlices
-    orgpoints = zeros(npairs,2);
-    refpoints = zeros(npairs,2);
-    for pair = 1:npairs
-        x1 = points(i,pair,1);
-        y1 = points(i,pair,2);
-        x2 = points(i,pair,3);
-        y2 = points(i,pair,4);
-        orgpoints(pair,:) = [x1 y1];
-        refpoints(pair,:) = [-x2 y2];
-    end
-    npoints = npairs;
-    for ii = 1:npoints-1
-        for jj = ii+1:npoints
-            p = orgpoints(ii,:);
-            q = orgpoints(jj,:);
-            r1 = q-p;
-            p = refpoints(ii,:);
-            q = refpoints(jj,:);
-            r2 = q-p;
-            n1 = norm(r1);
-            n2 = norm(r2);
-            nn = abs(n2-n1);
-            if nn > mx
-                mx = nn;
-            end
-        end
-    end
-end
+mx = 8000; % use 8um instead of computing
+% mx = 0;
+% for i = 1:nSlices
+%     orgpoints = zeros(npairs,2);
+%     refpoints = zeros(npairs,2);
+%     for pair = 1:npairs
+%         x1 = points(i,pair,1);
+%         y1 = points(i,pair,2);
+%         x2 = points(i,pair,3);
+%         y2 = points(i,pair,4);
+%         orgpoints(pair,:) = [x1 y1];
+%         refpoints(pair,:) = [-x2 y2];
+%     end
+%     npoints = npairs;
+%     for ii = 1:npoints-1
+%         for jj = ii+1:npoints
+%             p = orgpoints(ii,:);
+%             q = orgpoints(jj,:);
+%             r1 = q-p;
+%             p = refpoints(ii,:);
+%             q = refpoints(jj,:);
+%             r2 = q-p;
+%             n1 = norm(r1);
+%             n2 = norm(r2);
+%             nn = abs(n2-n1);
+%             if nn > mx
+%                 mx = nn;
+%             end
+%         end
+%     end
+% end
 
 % compute distance normalization for shuffle
-mx_shuf = 0;
-for i_shuf = 1:nSlices
-    orgpoints_shuf = zeros(npairs_shuf,2);
-    refpoints_shuf = zeros(npairs_shuf,2);
-    for pair_shuf = 1:npairs_shuf
-        x1_shuf = points_shuf(i_shuf,pair_shuf,1);
-        y1_shuf = points_shuf(i_shuf,pair_shuf,2);
-        x2_shuf = points_shuf(i_shuf,pair_shuf,3);
-        y2_shuf = points_shuf(i_shuf,pair_shuf,4);
-        orgpoints_shuf(pair_shuf,:) = [x1_shuf y1_shuf];
-        refpoints_shuf(pair_shuf,:) = [-x2_shuf y2_shuf];
-    end
-    npoints_shuf = npairs_shuf;
-    for ii_shuf = 1:npoints_shuf-1
-        for jj_shuf = ii_shuf+1:npoints_shuf
-            p_shuf = orgpoints_shuf(ii_shuf,:);
-            q_shuf = orgpoints_shuf(jj_shuf,:);
-            r1_shuf = q_shuf-p_shuf;
-            p_shuf = refpoints_shuf(ii_shuf,:);
-            q_shuf = refpoints_shuf(jj_shuf,:);
-            r2_shuf = q_shuf-p_shuf;
-            n1_shuf = norm(r1_shuf);
-            n2_shuf = norm(r2_shuf);
-            nn_shuf = abs(n2_shuf-n1_shuf);
-            if nn_shuf > mx_shuf
-                mx_shuf = nn_shuf;
-            end
-        end
-    end
-end
+mx_shuf = 8000; % use 8um instead of computing
+% mx_shuf = 0;
+% for i_shuf = 1:nSlices
+%     orgpoints_shuf = zeros(npairs_shuf,2);
+%     refpoints_shuf = zeros(npairs_shuf,2);
+%     for pair_shuf = 1:npairs_shuf
+%         x1_shuf = points_shuf(i_shuf,pair_shuf,1);
+%         y1_shuf = points_shuf(i_shuf,pair_shuf,2);
+%         x2_shuf = points_shuf(i_shuf,pair_shuf,3);
+%         y2_shuf = points_shuf(i_shuf,pair_shuf,4);
+%         orgpoints_shuf(pair_shuf,:) = [x1_shuf y1_shuf];
+%         refpoints_shuf(pair_shuf,:) = [-x2_shuf y2_shuf];
+%     end
+%     npoints_shuf = npairs_shuf;
+%     for ii_shuf = 1:npoints_shuf-1
+%         for jj_shuf = ii_shuf+1:npoints_shuf
+%             p_shuf = orgpoints_shuf(ii_shuf,:);
+%             q_shuf = orgpoints_shuf(jj_shuf,:);
+%             r1_shuf = q_shuf-p_shuf;
+%             p_shuf = refpoints_shuf(ii_shuf,:);
+%             q_shuf = refpoints_shuf(jj_shuf,:);
+%             r2_shuf = q_shuf-p_shuf;
+%             n1_shuf = norm(r1_shuf);
+%             n2_shuf = norm(r2_shuf);
+%             nn_shuf = abs(n2_shuf-n1_shuf);
+%             if nn_shuf > mx_shuf
+%                 mx_shuf = nn_shuf;
+%             end
+%         end
+%     end
+% end
 
 % % skeleton subset map (grayscale)
 % xyz = sqpairs{1,1};
@@ -565,7 +569,8 @@ if dodraw
     imshow(map_shuf)
 end
 
-dodraw = 1;
+dodraw = 0;
+doshow = 0;
 % visualize
 nStackRows = (npairs)*(npairs-1);
 stack = zeros(nStackRows,nSlices,3);
@@ -580,7 +585,8 @@ RD_all = nan(npairs,npairs,nSlices);
 RDum_shuf_all = nan(npairs,npairs,nSlices);
 RD_shuf_all = nan(npairs,npairs,nSlices);
 frameindex = 0;
-for i = 1:nSlices
+for ni = 1:nSlices
+    i = nSlices-ni+1;
     disp(i/nSlices)
     
     z0 = zmin+(i-1)/nSlices*(zmax-zmin);
@@ -616,7 +622,9 @@ for i = 1:nSlices
                 y2 = 400-(y2-ymin)/(ymax-ymin)*400;
                 I = insertShape(I,'circle',[x2 y2 5],'LineWidth',2,'Color',rgbs(pair,:));
             end
-            I = insertText(I, [5 5], sprintf('z = %06.2f um',(mean([z0 z1])-zmin)/1000),'TextColor','white','BoxOpacity',0.0);
+            I = insertText(I, [2 1], sprintf('z = %06.2f um',(mean([z0 z1])-zmin)/1000),'TextColor','white','BoxOpacity',0.0);
+            I = insertText(I, [170 1], 'left','TextColor','white','BoxOpacity',0.0);
+            I = insertText(I, [208 1], 'right','TextColor','white','BoxOpacity',0.0);
         end
     end
     
@@ -641,7 +649,9 @@ for i = 1:nSlices
                 y2_shuf = 400-(y2_shuf-ymin_shuf)/(ymax_shuf-ymin_shuf)*400;
                 I_shuf = insertShape(I_shuf,'circle',[x2_shuf y2_shuf 5],'LineWidth',2,'Color',rgbs_shuf(pair_shuf,:));
             end
-            I_shuf = insertText(I_shuf, [5 5], sprintf('z = %06.2f um',(mean([z0_shuf z1_shuf])-zmin_shuf)/1000),'TextColor','white','BoxOpacity',0.0);
+            I_shuf = insertText(I_shuf, [2 1], sprintf('z = %06.2f um',(mean([z0_shuf z1_shuf])-zmin_shuf)/1000),'TextColor','white','BoxOpacity',0.0);
+            I_shuf = insertText(I_shuf, [170 1], 'left','TextColor','white','BoxOpacity',0.0);
+            I_shuf = insertText(I_shuf, [208 1], 'right','TextColor','white','BoxOpacity',0.0);
         end
     end
 
@@ -778,21 +788,22 @@ for i = 1:nSlices
     RD_shuf_all(:,:,i) = RD_shuf;
     
     if dodraw
-        fig23 = figure(23);
-        scsz = get(0,'ScreenSize');
-        fig23.Position = [scsz(3)/4 scsz(4)/4 scsz(3)/2 scsz(4)/2];
-
+        if doshow
+            fig23 = figure(23);
+            scsz = get(0,'ScreenSize');
+            fig23.Position = [scsz(3)/4 scsz(4)/4 scsz(3)/2 scsz(4)/2];
+        end
         RD2 = zeros(4*npoints,4*npoints,3);
         for ii = 1:npoints
             for jj = 1:npoints
                 i0 = 4*(ii-1);
                 j0 = 4*(jj-1);
                 if ~isnan(RD(ii,jj))
-                    RD2(i0+1:i0+4,j0+1:j0+4,:) = RD(ii,jj);
-                    %graylevel = RD(ii,jj);
-                    %mapindex = round(graylevel*(size(WinterMap,1)-1))+1;
-                    %mapcolor = WinterMap(mapindex,:);
-                    %RD2(i0+1:i0+4,j0+1:j0+4,:) = repmat(reshape(mapcolor,[1 1 3]),[4 4]);
+                    %RD2(i0+1:i0+4,j0+1:j0+4,:) = RD(ii,jj);
+                    graylevel = RD(ii,jj);
+                    mapindex = round(graylevel*(size(WinterMap,1)-1))+1;
+                    mapcolor = WinterMap(mapindex,:);
+                    RD2(i0+1:i0+4,j0+1:j0+4,:) = repmat(reshape(mapcolor,[1 1 3]),[4 4]);
                 end
             end
         end
@@ -807,17 +818,21 @@ for i = 1:nSlices
                 if ~isnan(RD(ii,jj))
                     RD2(i0+1:i0+4,j0+1:j0+4,:) =  RD(ii,jj);
                     if ii < jj
-                        J = insertShape(J,'circle',[j00 i0 5],'LineWidth',2,'Color',rgbs(ii,:));
-                        J = insertShape(J,'circle',[j01 i0 5],'LineWidth',2,'Color',rgbs(jj,:));
+                        J = insertShape(J,'FilledCircle',[j00 i0 8],'LineWidth',2,'Color','white','Opacity',1);
+                        J = insertShape(J,'FilledCircle',[j01 i0 8],'LineWidth',2,'Color','white','Opacity',1);
+                        J = insertShape(J,'FilledCircle',[j00 i0 5],'LineWidth',2,'Color',rgbs(ii,:),'Opacity',1);
+                        J = insertShape(J,'FilledCircle',[j01 i0 5],'LineWidth',2,'Color',rgbs(jj,:),'Opacity',1);
                     else
-                        J = insertShape(J,'circle',[j00 i0 5],'LineWidth',2,'Color',rgbs(jj,:));
-                        J = insertShape(J,'circle',[j01 i0 5],'LineWidth',2,'Color',rgbs(ii,:));
+                        J = insertShape(J,'FilledCircle',[j00 i0 8],'LineWidth',2,'Color','white','Opacity',1);
+                        J = insertShape(J,'FilledCircle',[j01 i0 8],'LineWidth',2,'Color','white','Opacity',1);
+                        J = insertShape(J,'FilledCircle',[j00 i0 5],'LineWidth',2,'Color',rgbs(jj,:),'Opacity',1);
+                        J = insertShape(J,'FilledCircle',[j01 i0 5],'LineWidth',2,'Color',rgbs(ii,:),'Opacity',1);
                     end
                 end
             end
         end
-        J = insertText(J, [10 380], 'distance difference','TextColor','white','BoxOpacity',0.0);
-        J = insertText(J, [295 1], 'angle difference','TextColor','white','BoxOpacity',0.0);
+        J = insertText(J, [4 380], 'distance difference','TextColor','white','BoxOpacity',0.0);
+        J = insertText(J, [298 1], 'angle difference','TextColor','white','BoxOpacity',0.0);
         for ii = 1:400
             J(ii,ii,:) = 0.25;
         end
@@ -826,12 +841,12 @@ for i = 1:nSlices
         stackTop = stack(1:size(stack,1)/2,:,:);
         stackBot = stack(size(stack,1)/2+1:end,:,:);
         stack2 = imresize(stackTop,[50 805],'nearest');
-        stack2 = insertText(stack2, [5 1], sprintf('aggregate angle\ndifference'),'TextColor','white','BoxOpacity',0.0);
+        stack2 = insertText(stack2, [2 1], sprintf('aggregate angle\ndifference'),'TextColor','white','BoxOpacity',0.0);
         W = 0.25*ones(5,size(RGB,2),3);
         RGB = cat(1,RGB,W);
         RGB = cat(1,RGB,stack2);
         stack2 = imresize(stackBot,[50 805],'nearest');
-        stack2 = insertText(stack2, [5 1], sprintf('aggregate distance\ndifference'),'TextColor','white','BoxOpacity',0.0);
+        stack2 = insertText(stack2, [2 1], sprintf('aggregate distance\ndifference'),'TextColor','white','BoxOpacity',0.0);
         W = 0.25*ones(1,size(RGB,2),3);
         RGB = cat(1,RGB,W);
         RGB = cat(1,RGB,stack2);
@@ -841,32 +856,34 @@ for i = 1:nSlices
         z1map = floor((z1-zmin)/(zmax-zmin)*(size(RGB,2)-1))+1;
         map2 = map;
         map0 = rgb2gray(map) > 0;
-        %map2(:,z0map:z1map,[1 3]) = 0;
         map2(:,z0map:z1map,:) = 0;
-        %map2(:,z0map:z1map,2) = 2*map2(:,z0map:z1map,2);
         map2(:,z0map:z1map,:) = repmat(map0(:,z0map:z1map),[1 1 3]);
-        map2 = insertText(map2, [5 3], 'location','TextColor','white','BoxOpacity',0.0);
+        map2 = insertText(map2, [2 3], 'location','TextColor','white','BoxOpacity',0.0);
         RGB = cat(1,RGB,map2);
-        %imshow(RGB)
-        %mkdir(strcat(DataPath,filesep,Prefix,'video_900slices'))
-        %imwrite(RGB,strcat(DataPath,filesep,Prefix,'video_900slices',filesep,...
-        %  sprintf('idx%05d.png',frameindex)))
-        %pause(0.01)
+        if doshow
+            pause(0.01)
+            imshow(RGB)
+        end
+        %mkdir(strcat(DataPath,filesep,Prefix,'video_900slices_rtol'))
+        %imwrite(RGB,strcat(DataPath,filesep,Prefix,'video_900slices_rtol',filesep,...
+        %    sprintf('idx%05d.png',frameindex)))
         
-        fig24 = figure(24);
-        scsz = get(0,'ScreenSize');
-        fig24.Position = [scsz(3)/4 scsz(4)/4 scsz(3)/2 scsz(4)/2];
+        if doshow
+            fig24 = figure(24);
+            scsz = get(0,'ScreenSize');
+            fig24.Position = [scsz(3)/4 scsz(4)/4 scsz(3)/2 scsz(4)/2];
+        end
         RD2_shuf = zeros(4*npoints_shuf,4*npoints_shuf,3);
         for ii_shuf = 1:npoints_shuf
             for jj_shuf = 1:npoints_shuf
                 i0_shuf = 4*(ii_shuf-1);
                 j0_shuf = 4*(jj_shuf-1);
                 if ~isnan(RD_shuf(ii_shuf,jj_shuf))
-                    RD2_shuf(i0_shuf+1:i0_shuf+4,j0_shuf+1:j0_shuf+4,:) = RD_shuf(ii_shuf,jj_shuf);
-                    %graylevel_shuf = RD_shuf(ii_shuf,jj_shuf);
-                    %mapindex_shuf = round(graylevel_shuf*(size(WinterMap,1)-1))+1;
-                    %mapcolor_shuf = WinterMap(mapindex_shuf,:);
-                    %RD2_shuf(i0_shuf+1:i0_shuf+4,j0_shuf+1:j0_shuf+4,:) = repmat(reshape(mapcolor_shuf,[1 1 3]),[4 4]);
+                    %RD2_shuf(i0_shuf+1:i0_shuf+4,j0_shuf+1:j0_shuf+4,:) = RD_shuf(ii_shuf,jj_shuf);
+                    graylevel_shuf = RD_shuf(ii_shuf,jj_shuf);
+                    mapindex_shuf = round(graylevel_shuf*(size(WinterMap,1)-1))+1;
+                    mapcolor_shuf = WinterMap(mapindex_shuf,:);
+                    RD2_shuf(i0_shuf+1:i0_shuf+4,j0_shuf+1:j0_shuf+4,:) = repmat(reshape(mapcolor_shuf,[1 1 3]),[4 4]);
                 end
             end
         end
@@ -881,17 +898,21 @@ for i = 1:nSlices
                 if ~isnan(RD_shuf(ii_shuf,jj_shuf))
                     RD2_shuf(i0_shuf+1:i0_shuf+4,j0_shuf+1:j0_shuf+4,:) = RD(ii_shuf,jj_shuf);
                     if ii_shuf < jj_shuf
-                        J_shuf = insertShape(J_shuf,'circle',[j00_shuf i0_shuf 5],'LineWidth',2,'Color',rgbs_shuf(ii_shuf,:));
-                        J_shuf = insertShape(J_shuf,'circle',[j01_shuf i0_shuf 5],'LineWidth',2,'Color',rgbs_shuf(jj_shuf,:));
+                        J_shuf = insertShape(J_shuf,'FilledCircle',[j00_shuf i0_shuf 8],'LineWidth',2,'Color','white','Opacity',1);
+                        J_shuf = insertShape(J_shuf,'FilledCircle',[j01_shuf i0_shuf 8],'LineWidth',2,'Color','white','Opacity',1);
+                        J_shuf = insertShape(J_shuf,'FilledCircle',[j00_shuf i0_shuf 5],'LineWidth',2,'Color',rgbs_shuf(ii_shuf,:),'Opacity',1);
+                        J_shuf = insertShape(J_shuf,'FilledCircle',[j01_shuf i0_shuf 5],'LineWidth',2,'Color',rgbs_shuf(jj_shuf,:),'Opacity',1);
                     else
-                        J_shuf = insertShape(J_shuf,'circle',[j00_shuf i0_shuf 5],'LineWidth',2,'Color',rgbs_shuf(jj_shuf,:));
-                        J_shuf = insertShape(J_shuf,'circle',[j01_shuf i0_shuf 5],'LineWidth',2,'Color',rgbs_shuf(ii_shuf,:));
+                        J_shuf = insertShape(J_shuf,'FilledCircle',[j00_shuf i0_shuf 8],'LineWidth',2,'Color','white','Opacity',1);
+                        J_shuf = insertShape(J_shuf,'FilledCircle',[j01_shuf i0_shuf 8],'LineWidth',2,'Color','white','Opacity',1);
+                        J_shuf = insertShape(J_shuf,'FilledCircle',[j00_shuf i0_shuf 5],'LineWidth',2,'Color',rgbs_shuf(jj_shuf,:),'Opacity',1);
+                        J_shuf = insertShape(J_shuf,'FilledCircle',[j01_shuf i0_shuf 5],'LineWidth',2,'Color',rgbs_shuf(ii_shuf,:),'Opacity',1);
                     end
                 end
             end
         end
-        J_shuf = insertText(J_shuf, [10 380], 'distance difference','TextColor','white','BoxOpacity',0.0);
-        J_shuf = insertText(J_shuf, [295 1], 'angle difference','TextColor','white','BoxOpacity',0.0);
+        J_shuf = insertText(J_shuf, [4 380], 'distance difference','TextColor','white','BoxOpacity',0.0);
+        J_shuf = insertText(J_shuf, [298 1], 'angle difference','TextColor','white','BoxOpacity',0.0);
         for ii_shuf = 1:400
             J_shuf(ii_shuf,ii_shuf,:) = 0.25;
         end
@@ -899,13 +920,13 @@ for i = 1:nSlices
         RGB_shuf = cat(2,cat(2,I_shuf,W_shuf),J_shuf);
         stackTop_shuf = stack_shuf(1:size(stack_shuf,1)/2,:,:);
         stackBot_shuf = stack_shuf(size(stack_shuf,1)/2+1:end,:,:);
-        stack2_shuf = imresize(stackTop_shuf,[50 805],'nearest');
-        stack2_shuf = insertText(stack2_shuf, [5 1], sprintf('aggregate angle\ndifference'),'TextColor','white','BoxOpacity',0.0);
+        stack2_shuf = imresize(stackTop_shuf,[50 805],'bilinear');
+        stack2_shuf = insertText(stack2_shuf, [2 1], sprintf('aggregate angle\ndifference'),'TextColor','white','BoxOpacity',0.0);
         W_shuf = 0.25*ones(5,size(RGB_shuf,2),3);
         RGB_shuf = cat(1,RGB_shuf,W_shuf);
         RGB_shuf = cat(1,RGB_shuf,stack2_shuf);
         stack2_shuf = imresize(stackBot_shuf,[50 805],'nearest');
-        stack2_shuf = insertText(stack2_shuf, [5 1], sprintf('aggregate distance\ndifference'),'TextColor','white','BoxOpacity',0.0);
+        stack2_shuf = insertText(stack2_shuf, [2 1], sprintf('aggregate distance\ndifference'),'TextColor','white','BoxOpacity',0.0);
         W_shuf = 0.25*ones(1,size(RGB_shuf,2),3);
         RGB_shuf = cat(1,RGB_shuf,W_shuf);
         RGB_shuf = cat(1,RGB_shuf,stack2_shuf);
@@ -915,17 +936,17 @@ for i = 1:nSlices
         z1map_shuf = floor((z1_shuf-zmin_shuf)/(zmax_shuf-zmin_shuf)*(size(RGB_shuf,2)-1))+1;
         map2_shuf = map_shuf;
         map0_shuf = rgb2gray(map_shuf) > 0;
-        %map2_shuf(:,z0map_shuf:z1map_shuf,[1 3]) = 0;
         map2_shuf(:,z0map_shuf:z1map_shuf,:) = 0;
-        %map2_shuf(:,z0map_shuf:z1map_shuf,2) = 2*map2_shuf(:,z0map_shuf:z1map_shuf,2);
         map2_shuf(:,z0map_shuf:z1map_shuf,:) = repmat(map0_shuf(:,z0map_shuf:z1map_shuf),[1 1 3]);
-        map2_shuf = insertText(map2_shuf, [5 3], 'location','TextColor','white','BoxOpacity',0.0);
+        map2_shuf = insertText(map2_shuf, [2 3], 'location','TextColor','white','BoxOpacity',0.0);
         RGB_shuf = cat(1,RGB_shuf,map2_shuf);
-        %imshow(RGB_shuf)
-        %mkdir(strcat(DataPath,filesep,Prefix,'video_900slices_shuf'))
-        %imwrite(RGB,strcat(DataPath,filesep,Prefix,'video_900slices_shuf',filesep,...
-        %  sprintf('idx%05d.png',frameindex)))
-        %pause(0.01)
+        if doshow
+            imshow(RGB_shuf)
+            pause(0.01)
+        end
+        %mkdir(strcat(DataPath,filesep,Prefix,'video_900slices_rtol_shuf'))
+        %imwrite(RGB,strcat(DataPath,filesep,Prefix,'video_900slices_rtol_shuf',filesep,...
+        % sprintf('idx%05d.png',frameindex)))
     end
 end
 
@@ -952,6 +973,7 @@ ax.TickLength = [0 0];
 set(gcf,'PaperPositionMode','auto')
 % saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseCosts_Ang'),'epsc');
 % saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseCosts_Ang'),'svg');
+% saveas(gcf,strcat(DataPath,filesep,Prefix,'2D_SUBSETallMLF_AngleDiff'),'png');
 
 % heatmap shuffle angle difference
 fig72 = figure(72); clf;
@@ -977,6 +999,7 @@ ax.TickLength = [0 0];
 set(gcf,'PaperPositionMode','auto')
 % saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseCosts_Dist'),'epsc');
 % saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseCosts_Dist'),'svg');
+% saveas(gcf,strcat(DataPath,filesep,Prefix,'2D_SUBSETallMLF_DistDiff'),'png');
 
 % heatmap shuffle distance difference
 fig74 = figure(74); clf;
@@ -1017,8 +1040,9 @@ set(gcf,'PaperPositionMode','auto')
 view(0,180)
 set(gca,'YTickLabel',{'-20000','0','20000','40000'})
 set(gca,'XGrid','on','YGrid','on','TickDir','out')
-% saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseCosts_SubsetProj'),'epsc');
-% saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseCosts_SubsetProj'),'svg');
+% saveas(gcf,strcat(DataPath,filesep,Prefix,'2D_SUBSETallMLF_SubsetProj'),'epsc');
+% saveas(gcf,strcat(DataPath,filesep,Prefix,'2D_SUBSETallMLF_SubsetProj'),'svg');
+% saveas(gcf,strcat(DataPath,filesep,Prefix,'2D_SUBSETallMLF_SubsetProj'),'png');
 
 % shuffle projection map
 fig76 = figure(76); clf;
@@ -1063,7 +1087,7 @@ plot(Xax,stackNaN_shuf_sum,'r')
 box off
 % axis equal
 set(gcf,'PaperPositionMode','auto')
-ylim([0 10]); xlim([1 size(stackNaN,2)]);
+ylim([0 (size(stackNaN,1)/16)*10]); xlim([1 size(stackNaN,2)]);
 % saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseComp_StackSumPlot'),'epsc');
 % saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseComp_StackSumPlot'),'svg');
 
@@ -1074,7 +1098,7 @@ fig81.Position = [0 0 500 500];
 RD_var = nanvar(RD_all,1,3);
 heatmapcust(RD_var,[],[],[],'ColorBar',1,'GridLines','-',...
     'TickAngle',270,'ShowAllTicks',1,'UseLogColormap',false,...
-    'Colormap',parula,'MaxColorValue',0.1250,'MinColorValue',0);
+    'Colormap',winter,'MaxColorValue',0.1250,'MinColorValue',0);
 hold on
 ax = gca;
 ax.TickLength = [0 0];
@@ -1100,19 +1124,103 @@ for c=1:size(RD_var,1)
 end
 hold off
 axis square
-saveas(gcf,strcat(DataPath,filesep,Prefix,'HeatMap_Variance'),'epsc');
-saveas(gcf,strcat(DataPath,filesep,Prefix,'HeatMap_Variance'),'svg');
+% saveas(gcf,strcat(DataPath,filesep,Prefix,'2D_SUBSETnucMLFMauth_VarianceOverZ'),'epsc');
+% saveas(gcf,strcat(DataPath,filesep,Prefix,'2D_SUBSETnucMLFMauth_VarianceOverZ'),'svg');
 
-% suffle variance along z
+% shuffle variance along z
 fig82 = figure(82); clf;
 fig82.Position = [0 0 500 500];
 RD_shuf_var = nanvar(RD_shuf_all,1,3);
 heatmapcust(RD_shuf_var,[],[],[],'ColorBar',1,'GridLines','-',...
     'TickAngle',270,'ShowAllTicks',1,'UseLogColormap',false,...
-    'Colormap',parula,'MaxColorValue',0.1,'MinColorValue',0);
+    'Colormap',winter,'MaxColorValue',0.1,'MinColorValue',0);
 axis square
 ax = gca;
 ax.TickLength = [0 0];
+
+% instantaneous heatmap at specific z
+fig83 = figure(83); clf;
+fig83.Position = [0 0 500 500];
+i = 3547; disp(i+2013)
+RD_oneZ = RD_all(:,:,i);
+heatmapcust(RD_oneZ,[],[],[],'ColorBar',1,'GridLines','-',...
+    'TickAngle',270,'ShowAllTicks',1,'UseLogColormap',false,...
+    'Colormap',winter,'MaxColorValue',1,'MinColorValue',0);
+hold on
+ax = gca;
+ax.TickLength = [0 0];
+for c=1:size(RD_oneZ,1)
+    for r=1:size(RD_oneZ,2)
+        pos1 = [(c-0.25) (r-0.1) 0.25 0.25];
+        pos2 = [(c) (r-0.1) 0.25 0.25];
+        if c == r
+            continue
+        end
+        if c < r
+            rectangle('Position',pos1,'Curvature',[1 1],...
+                'FaceColor',rgbs(c,:),'LineWidth',0.1);
+            rectangle('Position',pos2,'Curvature',[1 1],...
+                'FaceColor',rgbs(r,:),'LineWidth',0.1);
+        else
+            rectangle('Position',pos1,'Curvature',[1 1],...
+                'FaceColor',rgbs(r,:),'LineWidth',0.1);
+            rectangle('Position',pos2,'Curvature',[1 1],...
+                'FaceColor',rgbs(c,:),'LineWidth',0.1);
+        end
+    end
+end
+hold off
+axis square
+% saveas(gcf,strcat(DataPath,filesep,Prefix,'2D_SUBSETnucMLFMauth_DiffMatSingleZ'),'epsc');
+% saveas(gcf,strcat(DataPath,filesep,Prefix,'2D_SUBSETnucMLFMauth_DiffMatSingleZ'),'svg');
+fig84 = figure(84); clf;
+fig84.Position = [0 0 500 500];
+i = 3547; disp(i+2013)
+RDum_oneZ = RDum_all(:,:,i);
+heatmapcust(RDum_oneZ,[],[],[],'ColorBar',1,'GridLines','-',...
+    'TickAngle',270,'ShowAllTicks',1,'UseLogColormap',false,...
+    'Colormap',winter,'MaxColorValue',8000,'MinColorValue',0);
+hold on
+ax = gca;
+ax.TickLength = [0 0];
+hold off
+axis square
+
+% 2D plot of points
+fig86 = figure(86); clf;
+fig86.Position = [0 0 500 500];
+dodraw = 1;
+% for ik = 1:400
+i = 3500-13+60; disp(i+2013)
+for pair = 1:npairs
+    x1 = points(i,pair,1);
+    y1 = points(i,pair,2);
+    x2 = points(i,pair,3);
+    y2 = points(i,pair,4);
+    orgpoints(pair,:) = [x1 y1];
+    refpoints(pair,:) = [-x2 y2];
+    if dodraw
+        if ~isnan(x1) && ~isnan(y1)
+            x1 = (x1-xmin)/(xmax-xmin)*400;
+            y1 = 400-(y1-ymin)/(ymax-ymin)*400;
+            pos1 = [x1 y1 5 5];
+            rectangle('Position',pos1,'Curvature',[1 1],...
+                'FaceColor',rgbs(pair,:),'LineWidth',0.1);
+        end
+        if ~isnan(x2) && ~isnan(y2)
+            x2 = (x2-xmin)/(xmax-xmin)*400;
+            y2 = 400-(y2-ymin)/(ymax-ymin)*400;
+            pos2 = [x2 y2 5 5];
+            rectangle('Position',pos2,'Curvature',[1 1],...
+                'FaceColor',rgbs(pair,:),'LineWidth',0.1);
+        end
+    end
+end
+axis equal
+% pause(0.1)
+% end
+% saveas(gcf,strcat(DataPath,filesep,Prefix,'2D_SUBSETnucMLFMauth_PointsSingleZ5500'),'epsc');
+% saveas(gcf,strcat(DataPath,filesep,Prefix,'2D_SUBSETnucMLFMauth_PointsSingleZ5500'),'svg');
 
 %% video from frames
 
