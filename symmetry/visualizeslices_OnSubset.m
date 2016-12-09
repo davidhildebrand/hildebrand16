@@ -66,7 +66,7 @@ if ~exist('rg','var')
     rg = max(rmax-rmin);
 end
 
-%% --------------------------------------------------
+% --------------------------------------------------
 fprintf('plot data and planes\n');
 % --------------------------------------------------
 
@@ -229,7 +229,7 @@ aymax_shuf = max(-ymin_shuf,ymax_shuf);
 azmax_shuf = max(-zmin_shuf,zmax_shuf);
 
 nSlices = floor((zmax-zmin)/60);
-% nSlices = round(nSlices/(2*5.25945));
+%nSlices = round(nSlices/(2*5.25945));
 
 %% display slices in figure (optional)
 
@@ -577,6 +577,8 @@ end
 
 dodraw = 0;
 doshow = 0;
+dosave = 0;
+
 % visualize
 nStackRows = (npairs)*(npairs-1);
 stack = zeros(nStackRows,nSlices,3);
@@ -765,6 +767,9 @@ for ni = 1:nSlices
         else
             %stack(ii,i,:) = rd(ii);
             graylevel = rd(ii);
+            if graylevel > 1 % saturate if needed based on manually set mx
+                graylevel = 1;
+            end
             mapindex = round(graylevel*(size(WinterMap,1)-1))+1;
             mapcolor = WinterMap(mapindex,:);
             stack(ii,i,:) = reshape(mapcolor,[1 1 3]);
@@ -797,6 +802,9 @@ for ni = 1:nSlices
         else
             %stack(ii,i,:) = rd(ii);
             graylevel_shuf = rd_shuf(ii_shuf);
+            if graylevel_shuf > 1 % saturate if needed based on manually set mx
+                graylevel_shuf = 1;
+            end
             mapindex_shuf = round(graylevel_shuf*(size(WinterMap,1)-1))+1;
             mapcolor_shuf = WinterMap(mapindex_shuf,:);
             stack_shuf(ii_shuf,i,:) = reshape(mapcolor_shuf,[1 1 3]);
@@ -821,6 +829,9 @@ for ni = 1:nSlices
                 if ~isnan(RD(ii,jj))
                     %RD2(i0+1:i0+4,j0+1:j0+4,:) = RD(ii,jj);
                     graylevel = RD(ii,jj);
+                    if graylevel > 1 % saturate if needed based on manually set mx
+                        graylevel = 1;
+                    end
                     mapindex = round(graylevel*(size(WinterMap,1)-1))+1;
                     mapcolor = WinterMap(mapindex,:);
                     RD2(i0+1:i0+4,j0+1:j0+4,:) = repmat(reshape(mapcolor,[1 1 3]),[4 4]);
@@ -884,9 +895,11 @@ for ni = 1:nSlices
             pause(0.01)
             imshow(RGB)
         end
-        %mkdir(strcat(DataPath,filesep,Prefix,'video_900slices_rtol'))
-        %imwrite(RGB,strcat(DataPath,filesep,Prefix,'video_900slices_rtol',filesep,...
-        %    sprintf('idx%05d.png',frameindex)))
+        if dosave
+            %mkdir(strcat(DataPath,filesep,Prefix,'video_900slices_rtol_xcent'))
+            imwrite(RGB,strcat(DataPath,filesep,Prefix,'video_900slices_rtol_xcent',filesep,...
+                sprintf('idx%05d.png',frameindex)))
+        end
         
         if doshow
             fig24 = figure(24);
@@ -901,6 +914,9 @@ for ni = 1:nSlices
                 if ~isnan(RD_shuf(ii_shuf,jj_shuf))
                     %RD2_shuf(i0_shuf+1:i0_shuf+4,j0_shuf+1:j0_shuf+4,:) = RD_shuf(ii_shuf,jj_shuf);
                     graylevel_shuf = RD_shuf(ii_shuf,jj_shuf);
+                    if graylevel_shuf > 1 % saturate if needed based on manually set mx
+                        graylevel_shuf = 1;
+                    end
                     mapindex_shuf = round(graylevel_shuf*(size(WinterMap,1)-1))+1;
                     mapcolor_shuf = WinterMap(mapindex_shuf,:);
                     RD2_shuf(i0_shuf+1:i0_shuf+4,j0_shuf+1:j0_shuf+4,:) = repmat(reshape(mapcolor_shuf,[1 1 3]),[4 4]);
@@ -964,9 +980,11 @@ for ni = 1:nSlices
             imshow(RGB_shuf)
             pause(0.01)
         end
-        %mkdir(strcat(DataPath,filesep,Prefix,'video_900slices_rtol_shuf'))
-        %imwrite(RGB,strcat(DataPath,filesep,Prefix,'video_900slices_rtol_shuf',filesep,...
-        % sprintf('idx%05d.png',frameindex)))
+        if dosave
+            %mkdir(strcat(DataPath,filesep,Prefix,'video_900slices_rtol_xcent_shuf'))
+            imwrite(RGB,strcat(DataPath,filesep,Prefix,'video_900slices_rtol_xcent_shuf',filesep,...
+                sprintf('idx%05d.png',frameindex)))
+        end
     end
 end
 
@@ -1191,20 +1209,20 @@ for c=1:size(RD_oneZ,1)
 end
 hold off
 axis square
-% saveas(gcf,strcat(DataPath,filesep,Prefix,'2D_SUBSETnucMLFMauth_DiffMatSingleZ'),'epsc');
-% saveas(gcf,strcat(DataPath,filesep,Prefix,'2D_SUBSETnucMLFMauth_DiffMatSingleZ'),'svg');
-fig84 = figure(84); clf;
-fig84.Position = [0 0 500 500];
-i = 3547; disp(i+2013)
-RDum_oneZ = RDum_all(:,:,i);
-heatmapcust(RDum_oneZ,[],[],[],'ColorBar',1,'GridLines','-',...
-    'TickAngle',270,'ShowAllTicks',1,'UseLogColormap',false,...
-    'Colormap',winter,'MaxColorValue',8000,'MinColorValue',0);
-hold on
-ax = gca;
-ax.TickLength = [0 0];
-hold off
-axis square
+% saveas(gcf,strcat(DataPath,filesep,Prefix,'2D_SUBSETnucMLFMauth_DiffMatSingleZ5560'),'epsc');
+% saveas(gcf,strcat(DataPath,filesep,Prefix,'2D_SUBSETnucMLFMauth_DiffMatSingleZ5560'),'svg');
+% fig84 = figure(84); clf;
+% fig84.Position = [0 0 500 500];
+% i = 3547; disp(i+2013)
+% RD_oneZ = RDum_all(:,:,i);
+% heatmapcust(RD_oneZ,[],[],[],'ColorBar',1,'GridLines','-',...
+%     'TickAngle',270,'ShowAllTicks',1,'UseLogColormap',false,...
+%     'Colormap',winter,'MaxColorValue',8000,'MinColorValue',0);
+% hold on
+% ax = gca;
+% ax.TickLength = [0 0];
+% hold off
+% axis square
 
 % 2D plot of points
 fig86 = figure(86); clf;
@@ -1239,8 +1257,8 @@ end
 axis equal
 % pause(0.1)
 % end
-% saveas(gcf,strcat(DataPath,filesep,Prefix,'2D_SUBSETnucMLFMauth_PointsSingleZ5500'),'epsc');
-% saveas(gcf,strcat(DataPath,filesep,Prefix,'2D_SUBSETnucMLFMauth_PointsSingleZ5500'),'svg');
+% saveas(gcf,strcat(DataPath,filesep,Prefix,'2D_SUBSETnucMLFMauth_PointsSingleZ5560'),'epsc');
+% saveas(gcf,strcat(DataPath,filesep,Prefix,'2D_SUBSETnucMLFMauth_PointsSingleZ5560'),'svg');
 
 %% video from frames
 
