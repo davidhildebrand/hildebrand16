@@ -14,21 +14,6 @@ end
 % [~,idx] = sort(s(:,3)); s = s(idx,:);
 % [~,idx] = sort(t(:,3)); t = t(idx,:);
 
-% plot3(s(:,1),s(:,2),s(:,3)), hold on
-% plot3(s(1,1),s(1,2),s(1,3),'o')
-% plot3(t(1,1),t(1,2),t(1,3),'o')
-% plot3(t(:,1),t(:,2),t(:,3)), hold off
-% pause
-
-% cgap = Inf;
-% for i = 1:m
-%     for j = 1:n
-%         d = norm(s(i,:)-t(j,:));
-%         if d < cgap
-%             cgap = d;
-%         end
-%     end
-% end
 cgap = 0;
 
 C = zeros(m+1,n+1);
@@ -48,9 +33,6 @@ for j = 2:n+1
 end
 
 for i = 2:m+1
-%     if mod(i,floor(m/10)) == 1
-%         fprintf('.')
-%     end
     for j = 2:n+1
         cij = norm(s(i-1,:)-t(j-1,:));
         [mn,imn] = min([C(i-1,j)+cgap C(i-1,j-1) C(i,j-1)+cgap]);
@@ -67,21 +49,6 @@ for i = 2:m+1
         end
     end
 end
-
-% imshow(C/max(max(C)))
-% pause
-
-% col = n+1;
-% row = m+1;
-% if C(m+1,n) < C(m,n+1) % sequence s 'ends earlier'
-%     while col > 1 && C(m+1,col) > C(m+1,col-1)
-%         col = col-1;
-%     end
-% else % sequence t 'ends earlier'
-%     while row > 1 && C(row,n+1) > C(row-1,n+1)
-%         row = row-1;
-%     end
-% end
 
 col = n+1;
 while col > 1 && C(m+1,col) > C(m+1,col-1)
