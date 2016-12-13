@@ -193,12 +193,7 @@ unexpected = sort(assignment(matches==0)); %iskelnames(assignment(matches==0))
 fprintf('show cost matrix\n');
 % --------------------------------------------------
 
-% hmcolmap = double(bone*0.9412);
-% hmcolmap = flipud(double(bone*0.9412));
-% hmcolmap = double(parula);
-% hmcolmap = flipud(double(jet*0.9412));
 hmcolmap = flipud(double(parula));
-% hmcolmap = flipud(double(cool*0.9412));
 
 % construct cost matrix with right vs left 
 Clen = length(C);
@@ -393,19 +388,23 @@ save(strcat(DataPath,filesep,Prefix,'assignment_161107t1546data_161107t1203subse
 % scsz = get(0,'ScreenSize'); % scsz = [left botton width height]
 % fig41.Position = [0 0 scsz(3) scsz(4)];
 % for i = 1:length(assignment)
-%     clf
 %     [P,~] = getnodes(D,iskels(i));
 %     if assignment(i) > 0
+%         disp(i)
+%         if i ~= 25
+%             continue
+%         end
+%         clf
 %         [Q,~] = getnodes(D,iskels(assignment(i)));
 %         symmetryshow_pair(P,Q,sp,V,rmin,rmax,...
 %             iskels(i),iskelnames{i},...
 %             iskels(assignment(i)),iskelnames{assignment(i)},...
 %             sampfreq);
-%         saveas(gcf,sprintf('%s%s161107t1656_pairs%spair__orng_%s__blue_%s.png',DataPath,...
-%             filesep,filesep,iskelnames{i},iskelnames{assignment(i)}));
-%         saveas(gcf,sprintf('%s%s161107t1656_pairs%spair__orng_%s__blue_%s',DataPath,...
-%             filesep,filesep,iskelnames{unexpected(i)},iskelnames{assignment(unexpected(i))}),'epsc');
-%          pause(0.1)
+%         %saveas(gcf,sprintf('%s%s161107t1656_pairs%spair__orng_%s__blue_%s.png',DataPath,...
+%         %    filesep,filesep,iskelnames{i},iskelnames{assignment(i)}));
+%         %saveas(gcf,sprintf('%s%s161107t1656_pairs%spair__orng_%s__blue_%s',DataPath,...
+%         %    filesep,filesep,iskelnames{unexpected(i)},iskelnames{assignment(unexpected(i))}),'epsc');
+%         pause(0.1)
 %     end
 % end
 
