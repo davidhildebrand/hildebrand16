@@ -4,8 +4,8 @@ clc
 %% settings
 DataPath = 'D:\Dropbox (Personal)\MATLAB\Data\';
 DataFile = '161107t1546_130201zf142_160515SWiFT_ProjOrLngstLtL_ANNOTsymmetry_IGNblacklistsymblack_1umLenThresh_PHYScoord_rootToNaN.txt';
-SubsetFile = '161107t1203_130201zf142_160515SWiFT_SUBSETspinalbackfillsIDENTnucMLFandMauthner.txt';
-% SubsetFile = '161107t1202_130201zf142_160515SWiFT_SUBSETspinalbackfillsIDENT.txt';
+%SubsetFile = '161107t1203_130201zf142_160515SWiFT_SUBSETspinalbackfillsIDENTnucMLFandMauthner.txt';
+SubsetFile = '161107t1202_130201zf142_160515SWiFT_SUBSETspinalbackfillsIDENT.txt';
 
 DateString = datestr(now,30);
 DateString = strrep(DateString(3:length(DateString)-2),'T','t');
@@ -20,8 +20,8 @@ fprintf('loading data\n');
 
 % load plane parameters (perpendicular vector and points)
 load(strcat(DataPath,filesep,'161107t1647_plane_161107t1546data_161107t1201subsetMLF_ICPnosubsamp.mat'));
-load(strcat(DataPath,filesep,'161121t1410_assignment_161107t1546data_161107t1203subsetNucMLFMauth_161107t1647planeMLF_OHpenalty_dtwFreq17.mat'),'asgnm_mr','C');
-% load(strcat(DataPath,filesep,'161112t0241_assignment_161107t1546data_161107t1202subsetIDENT_161107t1647planeMLF_OHpenalty_dtwFreq17.mat'),'asgnm_mr','C');
+%load(strcat(DataPath,filesep,'161121t1410_assignment_161107t1546data_161107t1203subsetNucMLFMauth_161107t1647planeMLF_OHpenalty_dtwFreq17.mat'),'asgnm_mr','C');
+load(strcat(DataPath,filesep,'161112t0241_assignment_161107t1546data_161107t1202subsetIDENT_161107t1647planeMLF_OHpenalty_dtwFreq17.mat'),'asgnm_mr','C');
 
 % skeletons
 D = importdata(strcat(DataPath,filesep,DataFile));
@@ -1009,8 +1009,8 @@ heatmapper(stackang,[],[],[],'ColorBar',1,'UseLogColormap',false,...
 ax = gca;
 ax.TickLength = [0 0];
 set(gcf,'PaperPositionMode','auto')
-% saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseCosts_Ang'),'epsc');
-% saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseCosts_Ang'),'svg');
+% saveas(gcf,strcat(DataPath,filesep,Prefix,'2D_SUBSETallMLF_AngleDiff'),'epsc');
+% saveas(gcf,strcat(DataPath,filesep,Prefix,'2D_SUBSETallMLF_AngleDiff'),'svg');
 % saveas(gcf,strcat(DataPath,filesep,Prefix,'2D_SUBSETallMLF_AngleDiff'),'png');
 
 % heatmap shuffle angle difference
@@ -1035,8 +1035,8 @@ heatmapper(stackdst,[],[],{},'ColorBar',1,'UseLogColormap',false,...
 ax = gca;
 ax.TickLength = [0 0];
 set(gcf,'PaperPositionMode','auto')
-% saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseCosts_Dist'),'epsc');
-% saveas(gcf,strcat(DataPath,filesep,Prefix,'PairwiseCosts_Dist'),'svg');
+% saveas(gcf,strcat(DataPath,filesep,Prefix,'2D_SUBSETallMLF_DistDiff'),'epsc');
+% saveas(gcf,strcat(DataPath,filesep,Prefix,'2D_SUBSETallMLF_DistDiff'),'svg');
 % saveas(gcf,strcat(DataPath,filesep,Prefix,'2D_SUBSETallMLF_DistDiff'),'png');
 
 % heatmap shuffle distance difference
@@ -1054,7 +1054,7 @@ set(gcf,'PaperPositionMode','auto')
 
 % projection map
 fig75 = figure(75); clf;
-fig75.Position = [0 0 size(stackdst,2)+400 size(stackdst,1)+500];
+fig75.Position = [0 0 3*size(stackdst,2)+400 3*size(stackdst,1)+500];
 xyz = sqpairs{1,1};
 xyz = [xyz; sqpairs{1,2}];
 [z,y,x] = symplanecoord(xyz,sp,V);
@@ -1073,13 +1073,19 @@ for pair = 2:npairs
 end
 hold off
 box off
+axis on
 axis equal
-set(gcf,'PaperPositionMode','auto')
+% set(gcf,'PaperPositionMode','auto')
 view(0,180)
 set(gca,'YTickLabel',{'-20000','0','20000','40000'})
-set(gca,'XGrid','on','YGrid','on','TickDir','out')
+set(gca,'YTickLabel',{'-250000','-200000','-150000','-100000','-50000','0','50000','100000','150000','200000','250000'})
+set(gca,'XGrid','off','YGrid','off','TickDir','out','TickLength',[0.01,0.01])
+set(gca,'Color',[240/255 240/255 240/255])
+hold off
 % saveas(gcf,strcat(DataPath,filesep,Prefix,'2D_SUBSETallMLF_SubsetProj'),'epsc');
 % saveas(gcf,strcat(DataPath,filesep,Prefix,'2D_SUBSETallMLF_SubsetProj'),'svg');
+% print(strcat(DataPath,filesep,Prefix,'2D_SUBSETidentMLF_SubsetProj'),'-dpng','-r1200');
+% plot2svg(strcat(DataPath,filesep,Prefix,'2D_SUBSETidentMLF_SubsetProjB.svg'),fig75,'png');
 % saveas(gcf,strcat(DataPath,filesep,Prefix,'2D_SUBSETallMLF_SubsetProj'),'png');
 
 % shuffle projection map
@@ -1162,6 +1168,8 @@ for c=1:size(RD_var,1)
 end
 hold off
 axis square
+% saveas(gcf,strcat(DataPath,filesep,Prefix,'2D_SUBSETidentMLF_VarianceOverZ'),'epsc');
+% saveas(gcf,strcat(DataPath,filesep,Prefix,'2D_SUBSETidentMLF_VarianceOverZ'),'svg');
 % saveas(gcf,strcat(DataPath,filesep,Prefix,'2D_SUBSETnucMLFMauth_VarianceOverZ'),'epsc');
 % saveas(gcf,strcat(DataPath,filesep,Prefix,'2D_SUBSETnucMLFMauth_VarianceOverZ'),'svg');
 
