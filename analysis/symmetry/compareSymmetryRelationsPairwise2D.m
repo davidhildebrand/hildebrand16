@@ -4,8 +4,8 @@ clc
 %% settings
 DataPath = 'D:\Dropbox (Personal)\MATLAB\Data\';
 DataFile = '161107t1546_130201zf142_160515SWiFT_ProjOrLngstLtL_ANNOTsymmetry_IGNblacklistsymblack_1umLenThresh_PHYScoord_rootToNaN.txt';
-%SubsetFile = '161107t1203_130201zf142_160515SWiFT_SUBSETspinalbackfillsIDENTnucMLFandMauthner.txt';
-SubsetFile = '161107t1202_130201zf142_160515SWiFT_SUBSETspinalbackfillsIDENT.txt';
+SubsetFile = '161107t1203_130201zf142_160515SWiFT_SUBSETspinalbackfillsIDENTnucMLFandMauthner.txt';
+%SubsetFile = '161107t1202_130201zf142_160515SWiFT_SUBSETspinalbackfillsIDENT.txt';
 
 DateString = datestr(now,30);
 DateString = strrep(DateString(3:length(DateString)-2),'T','t');
@@ -20,8 +20,8 @@ fprintf('loading data\n');
 
 % load plane parameters (perpendicular vector and points)
 load(strcat(DataPath,filesep,'161107t1647_plane_161107t1546data_161107t1201subsetMLF_ICPnosubsamp.mat'));
-%load(strcat(DataPath,filesep,'161121t1410_assignment_161107t1546data_161107t1203subsetNucMLFMauth_161107t1647planeMLF_OHpenalty_dtwFreq17.mat'),'asgnm_mr','C');
-load(strcat(DataPath,filesep,'161112t0241_assignment_161107t1546data_161107t1202subsetIDENT_161107t1647planeMLF_OHpenalty_dtwFreq17.mat'),'asgnm_mr','C');
+load(strcat(DataPath,filesep,'161121t1410_assignment_161107t1546data_161107t1203subsetNucMLFMauth_161107t1647planeMLF_OHpenalty_dtwFreq17.mat'),'asgnm_mr','C');
+%load(strcat(DataPath,filesep,'161112t0241_assignment_161107t1546data_161107t1202subsetIDENT_161107t1647planeMLF_OHpenalty_dtwFreq17.mat'),'asgnm_mr','C');
 
 % skeletons
 D = importdata(strcat(DataPath,filesep,DataFile));
@@ -994,6 +994,71 @@ stackdst = stackNaNum(nStackRows/2+1:end,:);
 stackang_shuf = stackNaN_shuf(1:nStackRows_shuf/2,:);
 stackdst_shuf = stackNaNum_shuf(nStackRows_shuf/2+1:end,:);
 
+%% consider absolute rather than relative relations within bundle
+% angle analysis
+
+scsz = get(0,'ScreenSize'); % scsz = [left botton width height]
+figure('Position',scsz)
+
+pair1 = 1;
+pair2 = 5;
+
+x1 = nan(1,nSlices);
+y1 = nan(1,nSlices);
+for slice = 1:nSlices
+    x1(slice) = points(slice,pair1,1); % x of first point of pair
+    y1(slice) = points(slice,pair1,2); % y of first point of pair
+end
+x2 = nan(1,nSlices);
+y2 = nan(1,nSlices);
+for slice = 1:nSlices
+    x2(slice) = points(slice,pair2,1); % x of first point of pair
+    y2(slice) = points(slice,pair2,2); % y of first point of pair
+end
+
+a = nan(1,nSlices);
+for slice = 1:nSlices
+    v1 = [x1(slice) y1(slice)];
+    v2 = [x2(slice) y2(slice)];
+    v = v2-v1;
+    v = v/norm(v);
+    a(slice) = atan2(v(2),v(1));
+end
+
+I = zeros(1000,1000,3);
+
+for i = 1:nSlices
+    disp(i/nSlices)
+    I = zeros(1000,1000,3);
+    z0 = zmin+(i-1)/nSlices*(zmax-zmin);
+    z1 = zmin+i/nSlices*(zmax-zmin);
+    for pair = [pair1 pair2]
+        sqA = sqpairs{pair,1};
+        sqB = sqpairs{pair,2};
+        rr = 10;
+        if ~isempty(sqA)
+            [x,y,z] = symplanecoord(sqA,sp,V);
+            idx = find(z >= z0 & z < z1);
+            if ~isempty(idx)
+                x = round((mean(x(idx))-xmin)/(xmax-xmin)*999+1);
+                y = round((mean(y(idx))-ymin)/(ymax-ymin)*999+1);
+                I = insertShape(I,'circle',[y x 20],'LineWidth',2,'Color',rgbs(pair,:));
+            end
+        end
+    end
+    
+    subplot(1,2,1)
+    plot(1:nSlices,a), hold on
+    plot(i,a(i),'o'), hold off
+    axis([1 nSlices -pi pi])
+    title('angle')
+    
+    subplot(1,2,2)
+    imshow(imrotate(I,90))
+    
+    pause(0.1)
+end
+
 %% generate summary heatmaps and plots
 
 % fig70 = figure(70); clf;
@@ -1267,15 +1332,3 @@ axis equal
 % end
 % saveas(gcf,strcat(DataPath,filesep,Prefix,'2D_SUBSETnucMLFMauth_PointsSingleZ5560'),'epsc');
 % saveas(gcf,strcat(DataPath,filesep,Prefix,'2D_SUBSETnucMLFMauth_PointsSingleZ5560'),'svg');
-
-%% video from frames
-
-%  writerObj = VideoWriter('~/Desktop/Slices.avi');
-%  writerObj.FrameRate = 12;
-%  open(writerObj);
-% for i = 1:nSlices
-%     disp(i/nSlices)
-%     I = imread(sprintf('~/Desktop/Slices/Slice%05d.png',i));
-%     writeVideo(writerObj, im2frame(I));
-% end
-% close(writerObj);
