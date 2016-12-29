@@ -1,0 +1,3 @@
+[submodule "CATMAID"]
+	path = analysis/CATMAID
+	url = git@github.com:RussTorres/Hildebrand16_CATMAID.git
