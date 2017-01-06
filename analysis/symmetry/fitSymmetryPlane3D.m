@@ -3,10 +3,7 @@ clc
 
 %% settings
 DataPath = 'D:\Dropbox (Personal)\MATLAB\Data\';
-%DataFile = '161101t1056_130201zf142_160515SWiFT_ProjOrLngstLtL_ANNOTsymmetry_IGNblacklistsymblack_1umLenThresh_PHYScoord_rootToNaN.txt';
-DataFile = '161107t1546_130201zf142_160515SWiFT_ProjOrLngstLtL_ANNOTsymmetry_IGNblacklistsymblack_1umLenThresh_PHYScoord_rootToNaN.txt';
-%SubsetFile = '161020t1702_130201zf142_160515SWiFT_SUBSETspinalbackfillsMLF.txt';
-%SubsetFile = '161104t1001_130201zf142_160515SWiFT_SUBSETspinalbackfillsMLF.txt';
+DataFile = '161107t1546_130201zf142_160515SWiFT_ProjOrLngstLtL_ANNOTsymmetry_IGNblacklistsymblack_1umLenThresh_PHYScoord.txt';
 SubsetFile = '161107t1201_130201zf142_160515SWiFT_SUBSETspinalbackfillsMLF.txt';
 
 DateString = datestr(now,30);

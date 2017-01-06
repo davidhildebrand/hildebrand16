@@ -3,8 +3,10 @@ clc
 
 %% settings
 DataPath = 'D:\Dropbox (Personal)\MATLAB\Data\';
-DataFile = '161107t1546_130201zf142_160515SWiFT_ProjOrLngstLtL_ANNOTsymmetry_IGNblacklistsymblack_1umLenThresh_PHYScoord_rootToNaN.txt';
+DataFile = '161107t1546_130201zf142_160515SWiFT_ProjOrLngstLtL_ANNOTsymmetry_IGNblacklistsymblack_1umLenThresh_PHYScoord.txt';
+% subset of 12 identified neurons (6 on each side)
 %SubsetFile = '161107t1203_130201zf142_160515SWiFT_SUBSETspinalbackfillsIDENTnucMLFandMauthner.txt';
+% subset of 44 identified neurons (22 on each side)
 SubsetFile = '161107t1202_130201zf142_160515SWiFT_SUBSETspinalbackfillsIDENT.txt';
 
 DateString = datestr(now,30);
