@@ -1,7 +1,10 @@
-The Hildebrand16 database and all associated code is made available under the 
-Open Database License (http://opendatacommons.org/licenses/odbl/1.0/). Any rights 
-in individual contents of the database are licensed under the Database Contents 
-License (http://opendatacommons.org/licenses/dbcl/1.0/). 
+The Hildebrand16 database is made available under the Open Database License 
+(http://opendatacommons.org/licenses/odbl/1.0/). Any rights in individual 
+contents of the database are licensed under the Database Contents License 
+(http://opendatacommons.org/licenses/dbcl/1.0/). 
+Where specified, portions of this repository include code that falls under
+other licenses.
+
 Any use should attribute the original data source:
     contact David Hildebrand <david@hildebrand.name>
 and database:
