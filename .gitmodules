@@ -1,3 +1,6 @@
 [submodule "CATMAID"]
 	path = analysis/CATMAID
 	url = git@github.com:RussTorres/Hildebrand16_CATMAID.git
+[submodule "CATMAID_tools"]
+	path = analysis/catmaid_tools
+	url = git@github.com:/htem/catmaid_tools.git
