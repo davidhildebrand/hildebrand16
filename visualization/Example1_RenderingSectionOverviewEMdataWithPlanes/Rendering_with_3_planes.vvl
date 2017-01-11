@@ -1,0 +1,127 @@
+def render(mask, img, volume, x, y, transf):
+	step = 0.3
+
+	norm = float3(0.6901, -0.7236, -0.113)
+	loc  = float3(881/2.0, 1823/2.0, 10135/12.5/2.0)
+
+	d0 = 0.0
+	d0 = -norm.x*loc.x - norm.y*loc.y - norm.z * loc.z
+
+	norm1 = float3(0.7502, 0.6612, -0.0003/12.5)
+	loc1  = float3(879/2.0, 1691/2.0, 10056/12.5/2.0)
+	d1 = 0.0
+	d1 = -norm1.x*loc1.x - norm1.y*loc1.y - norm1.z * loc1.z
+
+	color = float4(0)
+
+	line_iter = orthogonal_iter(volume, x, y, step)
+
+	color = float4(0)
+	tmp_col = float4(0)
+
+	lim_x_ye  = float2(546/2.0, 1216/2.0)
+	lim_y_ye  = float2(1356/2.0, 2026/2.0)
+
+	lim_x_ma  = float2(606/2.0, 1501/2.0)
+	lim_y_ma  = float2(1356/2.0, 2096/2.0)
+
+	outer_flag = 0.0
+	magenta_flag = 0.0
+	yellow_flag = 0.0
+
+	prev_dd_ma = 0.0
+	prev_dd_ye = 0.0
+	
+	init_flag = 1.0
+
+	for elem in line_iter:
+		val_ma = point_query_3d(mask, elem.x/8.0, elem.y/8.0, elem.z*2)
+
+		if init_flag > 0.5:
+			prev_dd_ma = elem.x*norm.x + elem.y*norm.y + elem.z*norm.z+d0
+			prev_dd_ye = elem.x*norm1.x + elem.y*norm1.y + elem.z*norm1.z+d1
+			init_flag = 0.0
+		flag_ye = 0
+		flag_ma = 0
+		
+		#for whole plane
+		if elem.x > lim_x_ye.x and elem.y > lim_y_ye.x and elem.x < lim_x_ye.y and elem.y < lim_y_ye.y:
+			flag_ye = 1
+
+		if elem.x > lim_x_ma.x and elem.y > lim_y_ma.x and elem.x < lim_x_ma.y and elem.y < lim_y_ma.y:
+			flag_ma = 1
+
+		if elem.z < step*5  and elem.z > 0.0 and outer_flag < 1.0:
+			img_val = linear_query_2d(img, elem.x*2.0, elem.y*2.0)
+			if img_val > 0.0:
+				tmp_col = float4(11,119,51,127.5)
+				color = alpha_compositing(color, tmp_col)
+				outer_flag = 10.0
+		
+		dd0 = 0.0
+		dd0 = elem.x*norm.x + elem.y*norm.y + elem.z*norm.z+d0
+		if dd0 * prev_dd_ma <= 0.0 and flag_ma > 0 and magenta_flag < 10.0:
+			tmp_col = float4(231, 41, 138, 127.5)
+			color = alpha_compositing(color, tmp_col)
+			magenta_flag += 1.0
+		prev_dd_ma = dd0
+		
+		dd0 = elem.x*norm1.x + elem.y*norm1.y + elem.z*norm1.z + d1
+		if dd0 * prev_dd_ye <= 0.0 and flag_ye > 0 and yellow_flag < 10.0:
+			tmp_col = float4(230, 171, 2, 127.5)
+			color = alpha_compositing(color, tmp_col)
+			yellow_flag += 1.0
+		else:
+			if val_ma > 100:
+				val = point_query_3d(volume, elem)
+				tmp_col = point_query_1d(transf, val)
+				if (tmp_col.x + tmp_col.y + tmp_col.z) > 0:
+					if val < 50:
+						val = val * 10
+					tmp_col = float4(tmp_col.x, tmp_col.y, tmp_col.z, tmp_col.w / 2.5)
+				else:
+					tmp_col = float4(val,val,val,val / 3000)
+
+				color = alpha_compositing(color, tmp_col)
+			else:
+				val = point_query_3d(volume, elem)
+				tmp_col = float4(val, val, val, val / 3000)
+				color = alpha_compositing(color, tmp_col)
+		prev_dd_ye = dd0
+				
+	color = background_white(color)
+
+	return RGBA(color)
+
+def halocondition(front, back, x, y):
+	a = point_query_2d(front, x, y)
+	b = point_query_2d(back, x, y)
+	a = detach(a)
+	b = detach(b)
+	c = alpha_compositing_wo_alpha(a, b)
+
+	c = background_white(c)
+
+	return RGBA(c)
+
+def main():
+	volume = load_data_3d('data/david_1G.dat')
+	mask = load_data_3d('data/mask.dat')
+	hori = load_data_2d('data/hori_filled.png')
+
+	colors = numpy.fromstring(open('data/1.tf', 'rb').read(), dtype=numpy.uint8).reshape(256, 4)
+
+	#enable_viewer(render(mask,hori,volume,x,y).range(x=-1536:1536,y=-1536:1536).dtype(volume, uchar).dtype(mask, uchar).dtype(hori, uchar) ,'TFF2', '3D', 255)
+	#enable_viewer(render(mask,hori,volume,x,y, colors).range(x=-512:512,y=-512:512).dtype(volume, uchar).dtype(mask, uchar).dtype(hori, uchar) ,'TFF2', '3D', 255)
+	#enable_viewer(render(mask,hori,volume,x,y, colors).range(x=-512:512,y=-512:512).dtype(volume, uchar).dtype(mask, uchar).dtype(hori, uchar) ,'TFF2', '3D', 255)
+
+	LoadIdentity()
+	Rotate(-145, 0, 1, 0)
+	Rotate(-18, 1, 0, 0)
+	Rotate(135, 0, 0, 1)
+	Translate(-980/2.0, -1740/2.0, -844/2.0)
+	
+
+	result = render(mask,hori,volume,x,y, colors).range(x=-1536:1536,y=-1536:1536).dtype(volume, uchar).dtype(mask, uchar).dtype(hori, uchar)
+
+	save_image(result, 'result.tif')

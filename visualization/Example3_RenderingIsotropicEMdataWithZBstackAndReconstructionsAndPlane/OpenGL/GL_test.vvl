@@ -1,0 +1,229 @@
+# EM Volume rendering + Stack Volume Rendering
+# Fish : Original EM data 
+# Mask : Mask data
+# Brain : Stack data
+# x     : work range for x axis
+# y     : work range for y axis
+# transf : Transfer function for EM data
+# min_val  : minmum value for Brain
+# max_val  : minmum value for Brain
+#def render(Fish, Mask, Brain, x, y, transf, min_val, max_val):
+def render(Fish, Mask, Brain, x, y, transf, input_col, min_val, max_val):
+	ret_col = float4(0)								# initialize
+	local_iter = orthogonal_iter(Fish, x, y, 1.0)	# create rendering iterator (Orthogonal)
+
+
+	#min_val = slider[0]/100.0 * 65536
+	#max_val = slider[1]/100.0 * 65536
+	for elem in local_iter:
+		fish  = point_query_3d(Fish, elem)			# Sample in EM data
+		f_col = point_query_1d(transf, fish) 		# RGBA color for transfer function
+		ret_col = alpha_compositing(ret_col, f_col) # Alpha compositing
+
+		mask_elem = float3(elem.x + 13, elem.y , elem.z )  # normalize corrodinates
+		mask = point_query_3d(Mask, mask_elem)			# Sample from mask data
+
+		mask = 100
+
+		if mask > 0:								# mask > 0 means it locates in Brain
+			brain_elem = float3(elem.x / 963 * 482, elem.y / 866 * 434, elem.z / 1621 * 811)  # normalize corrodinates
+			brain = point_query_3d(Brain, brain_elem)	# Sample in Stack data
+			b_col = float4(0)							# Brain color initialize
+			
+			if brain > min_val and brain < max_val:  	# Crop brain data from min_val to max_val
+				#ret_col.w *= 0.5						# Reduce Alpha value for EM
+				normalized_intensity = ((brain - min_val) / (1.0*(max_val - min_val) )) *255   	# Normalize brain data
+				
+				b_col_f = transfer(normalized_intensity)			# From transfer function in UI
+				b_col = float4(input_col[0].x, input_col[0].y, input_col[0].z, b_col_f.w)
+				#ret_col = alpha_compositing(ret_col, b_col)		# Alpha compositing
+
+	# change background to white
+	ret_col = background_white(ret_col, x ,y)
+
+
+	# Scale bar
+    if x >= 700 and x <= 867 and y >= 900 and y <= 910:
+        ret_col = float4(0, 0, 0, 255)
+
+
+
+	return RGB(ret_col)
+
+# EM Volume Rendering + Stack Maximum Projection
+# Fish : Original EM data 
+# Mask : Mask data
+# Brain : Stack data
+# x     : work range for x axis
+# y     : work range for y axis
+# transf : Transfer function for EM data
+# input_col : color for Stack data
+# min_val  : minmum value for Brain
+# max_val  : minmum value for Brain
+def max_intensity_rendering(Fish, Mask, Brain, x, y, transf, input_col, min_val, max_val):
+	ret_col = float4(0)								# initialize
+	local_iter = orthogonal_iter(Fish, x, y, 1.0)	# create rendering iterator (Orthogonal)
+
+	cnt = 0											# initialize counter for iterator
+	max_intensity = -99999.0						# initialize maximum intensity 
+	matched_cnt = 0									# initialize matched cnt for maximum intensity
+	for elem in local_iter:					
+		#mask_elem = float3(elem.x / 963 * 950, elem.y / 866 * 860, elem.z / 1621 * 1479)  # normalize corrodinates
+		mask_elem = float3(elem.x + 13, elem.y , elem.z )  # normalize corrodinates 
+		mask = point_query_3d(Mask, mask_elem)			# Sample from mask data
+
+		if mask > 0:								# mask > 0 means it locates in Brain
+			brain_elem = float3(elem.x / 963 * 482, elem.y / 866 * 434, elem.z / 1621 * 811)  # normalize corrodinates
+			brain = linear_query_3d(Brain, brain_elem)	# Sample in Stack data
+
+			if brain > min_val and brain < max_val:  	# Crop brain data from min_val to max_val
+				if max_intensity < brain:			# Find maximum intensity
+					max_intensity = brain
+					matched_cnt = cnt
+					
+		cnt += 1
+
+	local_iter = orthogonal_iter(Fish, x, y, 1.0)	# create another iterator (Orthogonal)
+	cnt = 0
+	for elem in local_iter:
+		fish  = point_query_3d(Fish, elem)			# Sample in EM data
+		f_col = point_query_1d(transf, fish) 		# RGBA color for transfer function
+		ret_col = alpha_compositing(ret_col, f_col) # Alpha compositing
+ 
+		# rendering for Stack
+		if cnt == matched_cnt and cnt != 0:
+			normalized_intensity = 1.0				# Initialize
+			b_col = float4(input_col[0].x*normalized_intensity, input_col[0].y*normalized_intensity, input_col[0].z*normalized_intensity, 0)							
+			normalized_intensity = ((max_intensity - min_val) / (1.0*(max_val - min_val) )*0.9+0.1) 
+			b_col.w = normalized_intensity * 255
+			ret_col = alpha_compositing(ret_col, b_col)
+
+		cnt += 1
+
+	# change background to white
+	ret_col = background_white(ret_col, x ,y)
+
+
+	# Scale bar
+    if x >= 700 and x <= 867 and y >= 900 and y <= 910:
+        ret_col = float4(0, 0, 0, 255)
+
+	return RGB(ret_col)
+
+
+def readSphereArray(Point_path, colorsArr):
+	points = []
+	lines = open(Point_path).readlines()
+    for elem in lines:
+        vals = elem.split(" ")
+        vals = [int(float(val)) for val in vals]
+		vals = numpy.array(vals, dtype=numpy.float32)
+        points.append(vals*0.1)
+		points.append(colorsArr[1])
+	return points
+
+
+def readPointArray(Point_path, Tag_path):
+	points = []
+	tags = []
+    lines = open(Point_path).readlines()
+    for elem in lines:
+        vals = elem.split(" ")
+        vals = [int(float(val)) for val in vals]
+        points.append(vals)
+
+    tagLines = open(Tag_path).readlines()
+    for elem in tagLines:
+        vals = elem.split(" ")
+        vals = [int(float(val)) for val in vals]
+        tags.append(vals)
+
+    return points, tags
+
+def makeDataStructure(points, tags, colorsArr):
+    size = len(points)-1
+    Index = 0
+    colorIndex = 0
+    prevTagID = 0
+    prevPointID = -1
+    vertices = []
+    colors = []
+    while Index < size:
+
+        w = -1.0
+        if tags[Index][0] != prevTagID:
+            prevTagID = tags[Index][0]
+            colorIndex = prevTagID % len(colorsArr)
+            
+        if prevPointID != points[Index][3]:
+            prevPointID = points[Index][3]
+            w = 1.0
+
+        x = float(points[Index][0])
+        y = float(points[Index][1])
+        z = float(points[Index][2])
+        vertices.append([x,y,z,w])
+        color = [colorsArr[colorIndex][0],colorsArr[colorIndex][1], colorsArr[colorIndex][2], 1.0]
+        vertices.append(color)
+        Index += 1
+    return vertices
+
+def readColor(file_path):
+	lines = open(file_path).readlines()
+
+	colors = []
+	for elem in lines:
+		colors.append([int(color) for color in elem.split(' ')])
+
+	colors = numpy.array(colors, dtype=numpy.float32) / 255.0
+
+	return colors
+
+
+def main():
+	import sys
+	if len(sys.argv) < 2:
+		print  "USAGE: vivaldi %s skeleton_prefix"%sys.argv[1]
+		print  "Default Skeletons data is used"
+		coord = "%s_coord"%('data/160919_Good')
+		color = "%s_color"%('data/160919_Good')
+		tag   = "%s_tag"%('data/160919_Good')
+
+	else:
+		coord = "%s_coord"%sys.argv[2]
+		color = "%s_color"%sys.argv[2]
+		tag   = "%s_tag"%sys.argv[2]
+
+
+	# EM data load
+	# DATA_PATH represents '/path/to/vivaldi/../data'
+	volume_ori   = load_data_3d("data/Zebrafish.dat")
+	# Mask dat load
+	volume_mask  = load_data_3d("data/Mask.dat")
+
+	colorsArr = readColor(color)
+
+
+	tr_data = open("data/Zebrafish.tf","rb").read()
+	transf  = numpy.fromstring(tr_data, dtype=numpy.uint8).reshape(256,4).astype(numpy.float32)
+
+	# Stack load
+	volume_brain = load_data_3d("data/SpinalBackfills.dat")
+	input_col = numpy.array([[171, 15, 15, 255], [171, 15, 15, 255],[171, 15, 15, 255],[171, 15, 15, 255]],dtype=numpy.float32)
+	start = 8000
+	end   = 30000
+
+	mGL_Data = []
+	
+	# Line, Tube Example
+	point, tag = readPointArray(coord, tag)
+	point = numpy.array(point, dtype=numpy.float32)
+	index = []
+	vertices = makeDataStructure(point, tag, colorsArr)
+	mData = {"primitive":"tube", "VBOData":vertices,"radius":1.4 }
+	mGL_Data.append(mData)
+	
+
+	enable_viewer(render(volume_ori, volume_mask, volume_brain, x, y, transf, input_col, start, end).range(x=-1024:1024, y=-1024:1024).bindgl(mGL_Data), 'TFF', '3D', 256, sld='SLIDER')
+
+

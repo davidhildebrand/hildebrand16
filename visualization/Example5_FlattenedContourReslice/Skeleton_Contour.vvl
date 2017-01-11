@@ -1,0 +1,96 @@
+def cutSkeleton(volume, x, y, ptr_list, length, colorPnt):
+	sample_coord = point_query_1d(ptr_list, x)
+	sample_coord.y = y
+    data = point_query_3d(volume, sample_coord)
+        
+	if data > 0:
+    	ydiff = y - ptr_list[x].y
+    	if ydiff < 1 && ydiff > -1:
+			data = 10
+
+    	return data
+
+def Length(x, y):
+    import math
+    return math.sqrt((x[0]-y[0])**2 + (x[1]-y[1])**2 + (x[2]-y[2])**2)
+
+
+def composite(front, back, x, y):
+	fr = point_query_2d(front, x, y)
+	ba = point_query_2d(back, x, y)
+
+	if fr > ba:
+		return fr
+	else:
+		return ba
+
+
+def readSkeleton():
+    import numpy, math
+    ###########################################################################
+    ###                         Read and Scale down
+    ###########################################################################
+    rawPoint = open("data/only_test_coord").readlines()
+    Points = []
+    genPoints = []
+    for elem in rawPoint:
+        vals = [int(val) for val in elem.split(' ')]
+		vals = vals[:-1]
+        Points.append(vals)
+
+
+    Points = [[Points[-1][0], Points[-1][1], Points[-1][2]+500]] + Points
+    Points = numpy.array(Points, dtype=numpy.int32)
+	Points /= 10
+    ###########################################################################
+
+    ###########################################################################
+    ###                            Clear Points
+    ###########################################################################
+    alignPoints = []
+    colorPoints = []
+
+    for idx in range(len(Points)):
+        mVec = []
+        if idx == 0:
+            alignPoints.append(Points[idx])
+            
+        if idx < len(Points)-1:
+            mVec = Points[idx+1] - Points[idx]
+            diff = Length(Points[idx+1], Points[idx])           
+
+            if diff > math.sqrt(2):
+                for j in range(1, int(round(diff))):
+                    tmp = Points[idx] + (mVec/diff)*j
+                    if numpy.array_equal(alignPoints[-1], Points[idx]) is not True:
+                        alignPoints.append(tmp)
+                        colorPoints.append(1)
+            else:
+                if numpy.array_equal(alignPoints[-1], Points[idx]) is not True:
+                    alignPoints.append(Points[idx])
+                    colorPoints.append(0)
+        else:
+            if numpy.array_equal(alignPoints[-1], Points[idx]) is not True:
+                alignPoints.append(Points[idx])
+                colorPoints.append(0)
+
+    alignPoints = numpy.array(alignPoints, dtype=numpy.float32)
+    colorPoints = numpy.array(colorPoints, dtype=numpy.int32)
+    
+    return alignPoints, colorPoints
+    ###########################################################################
+
+def main():
+    import numpy, math    
+	volume = load_data_3d('data/Zebrafish.dat')
+    
+    alignPoints = None
+    colorPoints = None
+    alignPoints, colorPoints = readSkeleton()
+    size = len(alignPoints)
+
+    
+
+    result = cutSkeleton(volume, x, y, alignPoints, size, colorPoints).range(x=0:size, y=0:500).merge(composite, 'front-to-back').dtype(result, uchar)
+    save_image(result,'result.png')
+

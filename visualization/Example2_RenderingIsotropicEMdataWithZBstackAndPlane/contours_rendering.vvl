@@ -1,0 +1,143 @@
+def render(Fish, Mask, Brain, x, y, transf, zbtransf, min_val, max_val, input_col, plane_norm, plane_loc):
+	
+	col = float4(0)
+	tmp_col = float4(0)
+	# for top view
+	local_iter = orthogonal_iter(Fish, x, y, 1.0124)
+
+	locx = 0
+	locy = 0
+	locz = 0
+
+	dx = 0.0
+	dy = 0.0
+	dz = 0.0
+
+	# for plane visualization
+	dist0 = 0.0
+	dist0 = -1 * dot(plane_norm[0], plane_loc[0])
+
+	start = float3(0)
+	start = local_iter.begin()
+	prev_dist = dot(start, plane_norm[0]) + dist0
+
+	plane_render_count = 0
+		
+	for elem in local_iter:
+
+		# boundary check
+		if elem.x < 2 or elem.y < 2 or elem.z < 2 or elem.x > 963-2 or elem.y > 866-2 or elem.z > 1621-2:
+			continue
+
+
+		val = point_query_3d(Fish, elem)
+		tmp_col = point_query_1d(transf, val)
+		tmp_col.w = tmp_col.w * 2
+		col = alpha_compositing(col, tmp_col)
+					
+		mask_elem = float3(elem.x + 27, elem.y , elem.z )  # normalize corrodinates
+		mask = point_query_3d(Mask, mask_elem)			# Sample from mask data
+		# Render Brain
+
+		if mask > 0:
+			brain_elem = float3(elem.x / 963 * 482, elem.y / 866 * 434 ,elem.z / 1621 * 811)  # normalize corrodinates
+			brain = linear_query_3d(Brain, brain_elem)	# Sample in Stack data
+					
+			b_col = float4(0)							# Brain color initialize
+				
+			if brain > min_val and brain < max_val:  	# Crop brain data from min_val to max_val
+				normalized_intensity = 1.0				# Initialize
+				b_col = float4(input_col[0].x*normalized_intensity, input_col[0].y*normalized_intensity, input_col[0].z*normalized_intensity, 0)							
+				normalized_intensity = ((brain - min_val) / (1.0*(max_val - min_val) )) *255   	    # Normalize brain data
+				b_col_w = point_query_1d(zbtransf, normalized_intensity)							# RGBA color for Stack
+
+				# emphasize middle area
+				if elem.z > 856 and elem.z < 1100:
+					b_col.w = 4.0 * b_col_w.w 
+				else:
+					b_col.w = 1.5 * b_col_w.w
+				col = alpha_compositing(col, b_col)		# Alpha compositing
+
+		
+		dist1 = 0.0
+		dist1 = dot(elem, plane_norm[0]) + dist0
+
+		if dist1 * prev_dist <= 0 and plane_render_count < 1:
+			plane_col = float4(230, 171, 2, 120)
+			col = alpha_compositing(col, plane_col)
+			plane_render_count += 1
+
+		prev_dist = dist1
+			
+
+
+	# scale bar 100um
+    if x >= 700 and x <= 867 and y >= 900 and y <= 910:
+        col = float4(0, 0, 0, 255)
+
+	col = background_white(col)
+
+
+	return RGBA(col)
+
+
+
+
+
+def main():
+	import sys
+	if len(sys.argv) < 3:
+		print_bold("USAGE : vivaldi %s [START=90] [END=91]"%sys.argv[1])
+		print_bold("THIS SOURCE : Rendering New aligned data with skeletons and stack for SpinalBackfills and a plane")
+		exit(0)
+
+	# Original SpinalBackfills
+	#volume = load_data_3d(DATA_PATH+"/david/EM_Skeleton_combined/EM_Spinal_2.dat")
+	#colorMapName = '160919_Desired_Colors.txt'
+
+	# 161107 SpinalBackfills (Blue & Purple)
+	volume = load_data_3d("data/Zebrafish.dat")
+	volume_mask  = load_data_3d("data/Mask.dat")
+
+	tr_data = open("data/Zebrafish.tf","rb").read()
+	transf = numpy.fromstring(tr_data, dtype=numpy.uint8).reshape(256,4).astype(numpy.float32)
+
+	Rot_Start = 90 if len(sys.argv) < 3 else int(sys.argv[2])
+	Rot_End   = 91 if len(sys.argv) < 4 else int(sys.argv[3])
+
+	# Plane definition
+	Plane_normal = numpy.array([[-0.999854064595206, 0.016858099721706, -0.002766583853512]], dtype=numpy.float32)
+	Plane_loc    = numpy.array([[ 268761.67377/600 , 135687.563833/600, 404620.713987/600 ]], dtype=numpy.float32)
+
+	# Red SpinalBackfills Stacks
+	input_col = numpy.array([[171, 15, 15, 255]],dtype=numpy.float32)
+
+	start = 3700
+	end = 65535
+
+	# Load SpinalBackfills Stack
+	volume_brain = load_data_3d('data/SpinalBackfills.dat')
+	tr_data1 = open("data/SpinalBackfills_23zf.tf","rb").read()
+	transf1  = numpy.fromstring(tr_data1, dtype=numpy.uint8).reshape(256,4).astype(numpy.float32)
+
+
+	from datetime import datetime 
+	today = "%02d%02d%02d_"%(int(str(datetime.now().year)[2:]),(datetime.now().month),(datetime.now().day))     
+
+	
+	import os
+	if not os.path.exists('result/%srotate'%today):
+		os.system('mkdir -p result/%srotate'%today)
+
+	for elem in range(Rot_Start,Rot_End):
+		val = 1.0
+
+		LoadIdentity()
+		Rotate(elem+0.01, 1, 0, 0)
+		Rotate(90, 0, 1, 0)
+		Translate(-963/2, -866/2, -1621/2)
+
+		result = render(volume, volume_mask, volume_brain, x, y, transf, transf1, start, end, input_col, Plane_normal, Plane_loc).range(x=-1024:1024, y=-800:1000)
+	
+		save_image(result, "%srotate/%s%03d.png"%(today,today,elem))
+	

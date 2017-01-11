@@ -1,0 +1,277 @@
+def render(volume, x, y, xy, xz150, xz240, data, curve_nodes, transf, green_mask):
+	#def render(volume, x, y, xy, xz150, xz240, data, curve_nodes):
+	step = 0.08
+
+
+	init_flag = 1.0
+
+	col = float4(0)
+	line_iter = orthogonal_iter(volume, x, y, step)
+	tmp_col = float4(0)
+
+
+	bottom_loc = 500.0
+	top_loc    = 186.0
+
+	loc_plane_1  = float3(488.8, 334.4, 941)
+	norm_plane_1 = float3(0.0108,0.9999, -0.06)
+
+
+	# top plane
+	loc_plane_2  = float3(490, 107, 0)
+	norm_plane_2 = float3(0.0108,0.9999, -0.06)
+
+
+	plane_flag =  0
+	render_flag = 0
+
+
+	sample_point = float3(0)
+	next_pt = float3(0)
+
+
+	# for iterative calc
+	norm = float3(0)
+
+	catch_flag = 0
+	dist_flag = 0
+	draw_flag = 0
+	yellow_flag = 0
+	orange_flag = 0
+	first_touch_flag = 0
+
+	target = 0
+
+	for elem in line_iter:
+
+		next_pt = line_iter.tmp_next()
+		# for bottom plane
+		dist = dot(norm_plane_1, loc_plane_1)
+		 
+		next_dist_1 = dot(norm_plane_1, next_pt) - dist
+		curr_dist_1 = dot(norm_plane_1,    elem) - dist
+
+		if curr_dist_1 > 0:
+			render_flag = 1
+
+		if curr_dist_1 * next_dist_1 <= 0.0 and plane_flag < 0.5 :
+			plane_flag = 1.0
+			sample_point = float3(elem.x, elem.y, elem.z)
+
+
+		# for curve plane
+		iter_step = 1
+		for cnt in range(0, curve_nodes-1, iter_step):
+			if catch_flag == 1:
+				break
+			if elem.x > 514:
+				break
+
+			sample1 = point_query_1d(data, cnt)
+			sample2 = point_query_1d(data, cnt+iter_step)
+	
+
+			h = bottom_loc - top_loc
+
+			sample1u = float3(sample1.x, bottom_loc, sample1.z)
+			sample1d = float3(sample1.x,    top_loc, sample1.z)
+			
+			sample2u = float3(sample2.x, bottom_loc, sample2.z)
+		
+			dz = sample2.z - sample1.z
+			dx = sample2.x - sample1.x
+
+			norm = cross(sample1u-sample1d, sample2u-sample1u)
+			dist = dot(norm, sample1)
+
+
+			next_dist_i = dot(norm, next_pt) - dist
+			curr_dist_i = dot(norm,    elem) - dist
+
+
+			if abs(curr_dist_i) <= sqrt(h*h*dz*dz + h*h*dx*dx)*step   and render_flag < 0.5 and elem.y < bottom_loc and ((elem.x - sample1.x)*(elem.x - sample2.x)<=0 or sample1.x == sample2.x) and ((elem.z - sample1.z)*(elem.z - sample2.z)<=0.01 or sample1.z == sample2.z) :
+				plane_flag = 2.0
+				
+				catch_flag = 1
+				target = cnt
+				dist = dot(norm_plane_2, loc_plane_2)
+				next_dist_2 = dot(norm_plane_2, elem) - dist
+				if next_dist_2 > 0:
+					sample_point = float3(elem.x, elem.y, elem.z)
+
+
+				# yellow box
+				if elem.z >= 193 and elem.z <= 259:
+					# left and right vertical
+					if abs(elem.z-195) <= 2 or abs(elem.z-257) < 2:
+						if elem.y >= 151.5 and elem.y <= 203.7:
+							yellow_flag = 1
+					# top and bottom horizon
+					elif abs(elem.y-153.5) < 2 or abs(elem.y-202.7) < 2:
+						yellow_flag = 1
+
+				# orange box
+				if elem.z > 626 and elem.x <= 495 and elem.x >= 373:
+					# right vertical
+					if abs(elem.x - 374) <= 2.5:
+						if elem.y >= 214.8 and elem.y <= 271.5:
+							orange_flag = 1
+					# left vertical
+					elif abs(elem.x - 494) < 2:
+						if elem.y >= 214.8 and elem.y <= 239.0:
+							orange_flag = 1
+					# top horizon
+					elif abs(elem.y -216.8) < 2:
+						orange_flag = 1
+					# bottom(right) horizon
+					elif abs(elem.y -270.5) < 2 and elem.x <= 456.0 :
+						orange_flag = 1
+
+					# bottom (left) tilt
+					# from (494, 238) to (457, 270.5)
+					#elif cnt > 628 and cnt < 670:
+				if elem.z > 626 and elem.x <= 495 and elem.x >= 454:
+					target_y = (270.5-238)/1.0/42 * (cnt-628) + 238
+					if abs(elem.y-target_y) < 2.0:
+						orange_flag = 1
+				break
+
+			#cnt = cnt + iter_step
+
+		# for top plane
+		dist = dot(norm_plane_2, loc_plane_2)
+		 
+		next_dist_2 = dot(norm_plane_2, next_pt) - dist
+		curr_dist_2 = dot(norm_plane_2,    elem) - dist
+
+		if curr_dist_2 * next_dist_2 < 0.0 and  catch_flag == 1:
+			plane_flag = 4.0
+			sample_point = float3(elem.x, elem.y, elem.z)
+
+
+		if plane_flag  > 0.5:
+			val = point_query_3d(volume, sample_point)
+			boundary_flag = 0.0
+			if sample_point.x > 1 and sample_point.x < 989 and sample_point.y > 1 and sample_point.y < 859 and sample_point.z > 1 and sample_point.z < 1599:
+				boundary_flag = 1.0
+
+			if plane_flag > 0.5 and boundary_flag > 0.5:
+				if plane_flag == 1:
+					mask = linear_query_2d(xz240, sample_point.x, sample_point.z)
+					if mask > 253:
+						#u = linear_query_2d(
+						if abs(elem.z - 601) > 2:
+							col = float4(val, val, val, 255)
+						else:
+							col = float4(20, 119, 52, 255)
+
+					#out_line
+					elif mask > 30:
+						# Cadet blut
+						col = float4(231, 41, 138, 255)
+
+				elif plane_flag == 2:
+					if (elem.z-960) < 1:
+						mask = linear_query_2d(xy, sample_point.x, sample_point.y)
+						if mask > 200:
+							dist = dot(norm_plane_1, loc_plane_1)
+							curr_dist_1 = dot(norm_plane_1,    sample_point) - dist
+							if abs(elem.z - 601) <= 2:
+								col = float4(20, 119, 52, 255)
+							elif curr_dist_1 > -3:
+								col = float4(231, 41, 138, 255)
+							else:
+								if yellow_flag:
+									col = float4(255, 238, 51, 255)
+								elif orange_flag:
+									col = float4(238, 119, 34, 255)
+								else:
+									col = float4(val-30, val-30, val-30, 255)
+
+				elif plane_flag != 3:
+					mask = linear_query_2d(xz150, sample_point.x, sample_point.z)
+					if mask > 200:
+						if abs(elem.z - 601) > 2:
+							col = float4(val, val, val, 255)
+						else:
+							col = float4(20, 119, 52, 255)
+
+					
+						
+				plane_flag = -1.0		
+				render_flag = -1.0
+				catch_flag = 0
+				draw_flag = 0
+				dist_flag = 0
+			else:
+				plane_flag = -1.0
+				col = float4(0,0,0,0)
+
+
+		if render_flag > 0.5 and plane_flag < 0.5:
+			val = point_query_3d(volume, elem)
+			if val <= 230:
+				first_touch_flag = 1
+
+			if first_touch_flag == 0:
+				continue
+			tmp_col = point_query_1d(transf, val)
+
+			if (tmp_col.x + tmp_col.y + tmp_col.z) > 0:
+				tmp_col = float4(tmp_col.x, tmp_col.y, tmp_col.z, tmp_col.w/5.0)
+
+			if abs(elem.z - 601) <= 2:
+				tmp_val = linear_query_2d(green_mask, elem.x, elem.y)
+				if tmp_val > 200 and tmp_val < 235:
+					tmp_col = float4(20, 119, 52, 255)
+
+			col = alpha_compositing(col, tmp_col)
+
+		
+		if col.w > 254:
+			break
+		
+	col = background_white(col)
+
+	return RGBA(col)
+
+def halocondition(front, back ,x, y):
+	a = point_query_2d(front, x, y)
+	b = point_query_2d(back,  x, y)
+
+	a = detach(a)
+	b = detach(b)
+
+	c = alpha_compositing_wo_alpha(a, b)
+	c = background_white(c)
+
+	return RGBA(c)
+
+def main():
+	volume = load_data_3d('data/new_990_860_1600.dat')
+
+	xy_mask = load_data_2d('data/XY_guide.png')
+	xz136_mask = load_data_2d('data/top.png')
+	xz332_mask = load_data_2d('data/bottom.png')
+	green_mask = load_data_2d('data/601_mask1.png')
+
+	import numpy
+	data2 = open('data/new_points1_out.txt').readlines()
+	data1 = [[int(float(val)) for val in elem.split(' ')] for elem in data2]
+	data1 = data1 + [[0, data1[-1][1], data1[-1][2]]]
+	data = numpy.array(data1, dtype=numpy.float32)
+
+	LoadIdentity()
+	Rotate(150, 0, 1, 0)
+	Rotate(-8, 1, 0, 0)
+	Translate(-990/2, -860/2, -1600/2)
+
+
+	tr_data = open("data/1.tf","rb").read()
+	transf = numpy.fromstring(tr_data, dtype=numpy.uint8).reshape(256,4).astype(numpy.float32)
+
+	data_size = len(data)
+
+	result = render(volume,x,y,xy_mask, xz136_mask, xz332_mask, data, data_size, transf, green_mask).range(x=-1536:1536,y=-1536:1536)
+
+	save_image(result)
